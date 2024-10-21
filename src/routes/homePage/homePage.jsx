@@ -13,16 +13,16 @@ function HomePage() {
                     <SearchBar />
                     <div className="boxes">
                         <div className="box">
-                            <h1>16+</h1>
-                            <h2>Years of Experience</h2>
+                            <h1>3</h1>
+                            <h2>Anos de Mercado</h2>
                         </div>
                         <div className="box">
-                            <h1>200</h1>
-                            <h2>Award Gained</h2>
+                            <h1>PREMIADO</h1>
+                            <h2>Pela Revista Veja e OGlobo</h2>
                         </div>
                         <div className="box">
-                            <h1>2000+</h1>
-                            <h2>Property Ready</h2>
+                            <h1>270</h1>
+                            <h2>Repúblicas</h2>
                         </div>
                     </div>
                 </div>
