@@ -1,4 +1,4 @@
-.login {
+.registerPage {
     height: 100%;
     display: flex;
 
@@ -20,6 +20,33 @@
                 border-radius: 5px;
             }
 
+            .genderSelection {
+                display: flex;
+                gap: 10px;
+
+                input[type="radio"] {
+                    display: none;
+
+                    &:checked+label {
+                        background-color: teal;
+                        color: white;
+                        border: 1px solid teal;
+                    }
+                }
+
+                label {
+                    padding: 10px 20px;
+                    border: 1px solid gray;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: background-color 0.3s, color 0.3s;
+
+                    &:hover {
+                        background-color: #f0f0f0;
+                    }
+                }
+            }
+
             button {
                 padding: 20px;
                 border-radius: 5px;
@@ -30,7 +57,7 @@
                 cursor: pointer;
 
                 &:disabled {
-                    background-color: #BED9D8;
+                    background-color: #bed9d8;
                     cursor: not-allowed;
                 }
             }
