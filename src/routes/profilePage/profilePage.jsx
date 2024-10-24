@@ -1,8 +1,12 @@
 import Chat from "../../components/chat/Chat";
 import List from "../../components/list/List";
 import "./profilePage.scss";
+import { useContext, useState } from "react";
+import apiRequest from "../../lib/apiRequest"
 
 function ProfilePage() {
+
+      
     return (
         <div className="profilePage">
             <div className="details">
@@ -19,11 +23,11 @@ function ProfilePage() {
                                 alt=""
                             />
                         </span>
-                        <span>
-                            Usuario: <b>Maria</b>
+                        <span id="nome">
+                            Usuario: <b></b>
                         </span>
-                        <span>
-                            E-mail: <b>maria@gmail.com</b>
+                        <span id="email">
+                            E-mail: <b></b>
                         </span>
                     </div>
                     <div className="title">

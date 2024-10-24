@@ -8,6 +8,7 @@ const Register = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [success, setSuccess] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -30,9 +31,10 @@ const Register = () => {
                 genero,
             });
 
-            console.log("Response:", res);
-
             if (res.status === 200 || res.status === 201) {
+                setSuccess('Registro bem-sucedido!');
+                console.log('Resposta da API:', res.data);
+
                 navigate("/login");
             } else {
                 setError("Erro ao registrar. Tente novamente.");
