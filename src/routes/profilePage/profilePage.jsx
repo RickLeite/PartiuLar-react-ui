@@ -1,12 +1,24 @@
 import Chat from "../../components/chat/Chat";
 import List from "../../components/list/List";
 import "./profilePage.scss";
-import { useContext, useState } from "react";
-import apiRequest from "../../lib/apiRequest"
+import {useState, useEffect } from "react";
+import apiRequest from "../../lib/apiRequest";
+import {useUser} from "../../lib/UserContex";
+
 
 function ProfilePage() {
 
-      
+    const { user } = useUser(); // Aqui você acessa o usuário do contexto
+    const [profileData, setProfileData] = useState(null);
+    
+    useEffect(() => {
+        if (user?.id) {
+          document.getElementById("email").innerText = `${user.email}`;
+          document.getElementById("nome").innerText = `${user.nome}`;
+
+        }
+      }, [user]);
+
     return (
         <div className="profilePage">
             <div className="details">

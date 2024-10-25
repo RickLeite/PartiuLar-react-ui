@@ -9,6 +9,7 @@ import SinglePage from "./routes/singlePage/singlePage";
 import ProfilePage from "./routes/profilePage/profilePage";
 import Register from "./routes/register/register";
 import Login from "./routes/login/login";
+import { UserProvider } from "./lib/UserContex";
 
 function App() {
   const router = createBrowserRouter([
@@ -45,8 +46,10 @@ function App() {
   ]);
 
   return (
-
-    <RouterProvider router={router} />
+    <UserProvider>
+      <RouterProvider router={router} />
+    </UserProvider>
+      
   );
 }
 
