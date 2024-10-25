@@ -1,14 +1,17 @@
-import { useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import "./login.scss";
 import { Link, useNavigate } from "react-router-dom";
 import apiRequest from "../../lib/apiRequest";
-import ProfilePage from "../profilePage/profilePage";
+import { useUser } from "../../lib/UserContex"; 
 
 
 function Login() {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(null);
+    const { setUser } = useUser("");
+
+    //const UserContext = createContext();
 
     const navigate = useNavigate();
 
@@ -31,10 +34,13 @@ function Login() {
             });
             
             console.log('verificando status')
-            //console.log("Response:", res);
+    
             if (res.status === 200 || res.status === 201) {
-                
-                console.log('Resposta da API:', res.data.usuario);
+
+                const userData = res.data.usuario
+                setUser(userData);
+
+                console.log('Resposta da API:', userData);
 
                 navigate("/");
             } else {
