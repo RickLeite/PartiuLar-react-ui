@@ -3,10 +3,20 @@
 .card {
     display: flex;
     gap: 20px;
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
 
     .imageContainer {
         flex: 2;
         height: 200px;
+        position: relative;
 
         @include md {
             display: none;
@@ -16,7 +26,18 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 8px;
+        }
+
+        .propertyType {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
         }
     }
 
@@ -24,7 +45,6 @@
         flex: 3;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         gap: 10px;
 
         img {
@@ -35,12 +55,14 @@
         .title {
             font-size: 20px;
             font-weight: 600;
-            color: #444;
-            transition: all 0.4s ease;
+            color: #333;
 
-            &:hover {
-                color: #000;
-                scale: 1.01;
+            a {
+                transition: color 0.3s ease;
+
+                &:hover {
+                    color: #fece51;
+                }
             }
         }
 
@@ -49,53 +71,61 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            color: #888;
+            color: #666;
         }
 
         .price {
-            font-size: 20px;
-            font-weight: 300;
-            padding: 5px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #2ecc71;
+            padding: 5px 10px;
+            background-color: #eafaf1;
             border-radius: 5px;
-            background-color: rgba(254, 205, 81, 0.438);
             width: max-content;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
         }
 
         .bottom {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
 
             .features {
                 display: flex;
-                gap: 20px;
-                font-size: 14px;
+                gap: 15px;
 
                 .feature {
                     display: flex;
                     align-items: center;
                     gap: 5px;
-                    background-color: whitesmoke;
-                    padding: 5px;
-                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    font-size: 13px;
+                    color: #555;
                 }
             }
 
             .icons {
                 display: flex;
-                gap: 20px;
+                gap: 10px;
 
                 .icon {
-                    border: 1px solid #999;
-                    padding: 2px 5px;
-                    border-radius: 5px;
+                    padding: 8px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
                     cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    transition: all 0.3s ease;
 
                     &:hover {
-                        background-color: lightgray;
+                        background-color: #fece51;
+                        border-color: #fece51;
                     }
                 }
             }

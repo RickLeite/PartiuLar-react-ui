@@ -2,10 +2,21 @@ import { Link } from "react-router-dom";
 import "./card.scss";
 
 function Card({ item }) {
+    let imageUrl;
+
+    try {
+        const parsedImages = JSON.parse(item.img);
+        console.log("Parsed images:", parsedImages);
+        imageUrl = Array.isArray(parsedImages) ? parsedImages[0] : item.img;
+    } catch (e) {
+        console.error("Error parsing image JSON:", e);
+        imageUrl = item.img;
+    }
+
     return (
         <div className="card">
             <Link to={`/${item.id}`} className="imageContainer">
-                <img src={item.img} alt="" />
+                <img src={imageUrl} alt="" />
             </Link>
             <div className="textContainer">
                 <h2 className="title">

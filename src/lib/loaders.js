@@ -14,8 +14,18 @@ export const listPageLoader = async ({ request, params }) => {
 };
 
 export const profilePageLoader = async () => {
-    const postPromise = apiRequest("/users/profilePosts");
+    // Pegando o usuário do localStorage para ter acesso ao ID
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+
+    if (!currentUser?.usuario?.id) {
+        throw new Error("Usuário não autenticado");
+    }
+
+    const userId = currentUser.usuario.id;
+
+    const postPromise = apiRequest(`/users/profilePosts/${userId}`);
     const chatPromise = apiRequest("/chats");
+
     return defer({
         postResponse: postPromise,
         chatResponse: chatPromise,
