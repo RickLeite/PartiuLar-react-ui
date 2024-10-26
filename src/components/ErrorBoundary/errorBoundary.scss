@@ -67,7 +67,8 @@
                 color: #333;
 
                 &:hover {
-                    background-color: darken(#fece51, 10%);
+                    background-color: adjust-color(#fece51, $lightness: -10%);
+                    transform: translateY(-2px);
                 }
             }
 
@@ -76,7 +77,7 @@
                 color: #333;
 
                 &:hover {
-                    background-color: darken(#f0f0f0, 10%);
+                    background-color: adjust-color(#f0f0f0, $lightness: -10%);
                 }
             }
         }

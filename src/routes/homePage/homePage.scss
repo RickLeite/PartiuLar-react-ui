@@ -80,7 +80,7 @@
                             color: #333;
 
                             &:hover {
-                                background-color: darken(#fece51, 10%);
+                                background-color: adjust-color(#fece51, $lightness: -10%);
                                 transform: translateY(-2px);
                             }
                         }
@@ -94,6 +94,7 @@
                                 color: #333;
                             }
                         }
+
                     }
                 }
             }
