@@ -1,34 +1,102 @@
+import { useContext } from "react";
 import SearchBar from "../../components/searchBar/SearchBar";
 import "./homePage.scss";
+import { AuthContext } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
+// import { motion } from "framer-motion";
 
 function HomePage() {
+    const { currentUser } = useContext(AuthContext);
+
+    const stats = [
+        {
+            number: "3",
+            label: "Anos de Mercado",
+            description: "Experiência em moradia universitária"
+        },
+        {
+            number: "PREMIADO",
+            label: "Pela Revista Veja e OGlobo",
+            description: "Reconhecimento nacional"
+        },
+        {
+            number: "270+",
+            label: "Repúblicas",
+            description: "Moradias disponíveis"
+        }
+    ];
+
     return (
         <div className="homePage">
             <div className="textContainer">
                 <div className="wrapper">
-                    <h1 className="title">Com o PartiuLar encontre o seu lar universitario</h1>
-                    <p>
-                        Republicas, Aps compartilhados, Kitnets e muito mais
-                    </p>
-                    <SearchBar />
+                    <div className="heroSection">
+                        <h1 className="title">
+                            Com o PartiuLar encontre o seu{" "}
+                            <span className="highlight">lar universitário</span>
+                        </h1>
+                        <p className="subtitle">
+                            Repúblicas, Apartamentos compartilhados, Kitnets e muito mais
+                            para sua vida acadêmica
+                        </p>
+                        <SearchBar />
+                        {!currentUser && (
+                            <div className="cta-buttons">
+                                <Link to="/register" className="register-btn">
+                                    Cadastre-se Gratuitamente
+                                </Link>
+                                <Link to="/about" className="learn-more-btn">
+                                    Saiba Mais
+                                </Link>
+                            </div>
+                        )}
+                    </div>
                     <div className="boxes">
-                        <div className="box">
-                            <h1>3</h1>
-                            <h2>Anos de Mercado</h2>
-                        </div>
-                        <div className="box">
-                            <h1>PREMIADO</h1>
-                            <h2>Pela Revista Veja e OGlobo</h2>
-                        </div>
-                        <div className="box">
-                            <h1>270</h1>
-                            <h2>Repúblicas</h2>
+                        {stats.map((stat, index) => (
+                            <div className="box" key={index}>
+                                <h1>{stat.number}</h1>
+                                <h2>{stat.label}</h2>
+                                <p>{stat.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="features">
+                        <h3>Por que escolher o PartiuLar?</h3>
+                        <div className="feature-grid">
+                            <div className="feature">
+                                <img src="/icons/security.svg" alt="Segurança" />
+                                <h4>Segurança Verificada</h4>
+                                <p>Todas as moradias são verificadas</p>
+                            </div>
+                            <div className="feature">
+                                <img src="/icons/location.svg" alt="Localização" />
+                                <h4>Próximo à Universidade</h4>
+                                <p>Localizações estratégicas</p>
+                            </div>
+                            <div className="feature">
+                                <img src="/icons/support.svg" alt="Suporte" />
+                                <h4>Suporte 24/7</h4>
+                                <p>Assistência quando precisar</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="imgContainer">
-                <img src="/bg.png" alt="" />
+                <div className="overlay"></div>
+                <img
+                    src="/bg.png"
+                    alt="Estudantes em uma república"
+                    loading="eager"
+                />
+                {currentUser && (
+                    <div className="welcome-badge">
+                        <p>Bem-vindo de volta, {currentUser.usuario.nome}!</p>
+                        <Link to="/profile" className="profile-link">
+                            Ver Perfil
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     );
