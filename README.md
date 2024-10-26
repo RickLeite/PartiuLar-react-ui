@@ -1,3 +1,21 @@
-# PartiuLar
+# PartiuLar - Student Housing Platform
 
-SCSS - é um pré-processador de folhas de estilo que é interpretado ou compilado em CSS. Ele fornece funcionalidades como variáveis, aninhamento, mixins e muito mais, o que torna a escrita de CSS mais eficiente e fácil.
+A web application connecting university students for shared housing opportunities. Built with React.js, Express.js, and PostgreSQL.
+
+## Features
+- User authentication
+- Real-time chat system
+- Property listings with geolocation
+- Search filters 
+- Interactive maps
+- Profile management
+
+## Overview
+PartiuLar facilitates student housing search by connecting students with compatible roommates and accommodations near universities. Inspired by BlaBlaCar's, it provides a modern solution for the growing student housing demand in university cities.
+
+## Tech Stack
+- Frontend: React.js
+- Backend: Express.js
+- Database: PostgreSQL
+- ORM: Prisma
+- Real-time: Socket.io
