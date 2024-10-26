@@ -1,41 +1,48 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "./navbar.scss";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 function Navbar() {
     const [open, setOpen] = useState(false);
+    const { currentUser } = useContext(AuthContext);
 
-    const user = true;
+    const defaultAvatar = "/noavatar.jpg";
+
     return (
         <nav>
             <div className="left">
-                <a href="/" className="logo">
+                <Link to="/" className="logo">
                     <img src="/logo.png" alt="" />
                     <span>PartiuLar</span>
-                </a>
-                <a href="/list">Lista</a>
-                <a href="/">Sobre-Nós</a>
-                <a href="/">Contato</a>
+                </Link>
+                <Link to="/list">Lista</Link>
+                <Link to="/about">Sobre-Nós</Link>
+                <Link to="/contact">Contato</Link>
             </div>
             <div className="right">
-                {user ? (
+                {currentUser ? (
                     <div className="user">
-                        <img
-                            src="https://www.webquarto.com.br/images/female_avatar.png"
-                            alt=""
-                        />
-                        <span>Maria</span>
+                        <div className="user-info">
+                            <img
+                                src={currentUser.usuario.avatar || defaultAvatar}
+                                alt={`${currentUser.usuario.nome}'s profile`}
+                            />
+                            <span className="user-name">{currentUser.usuario.nome}</span>
+                        </div>
                         <Link to="/profile" className="profile">
-                            <div className="notification">3</div>
-                            <span>Profile</span>
+                            {currentUser.notifications > 0 && (
+                                <div className="notification">{currentUser.notifications}</div>
+                            )}
+                            <span>Perfil</span>
                         </Link>
                     </div>
                 ) : (
                     <>
-                        <a href="/">Sign in</a>
-                        <a href="/" className="register">
-                            Sign up
-                        </a>
+                        <Link to="/login">Entrar</Link>
+                        <Link to="/register" className="register">
+                            Registrar
+                        </Link>
                     </>
                 )}
                 <div className="menuIcon">
@@ -46,12 +53,16 @@ function Navbar() {
                     />
                 </div>
                 <div className={open ? "menu active" : "menu"}>
-                    <a href="/">Home</a>
-                    <a href="/">About</a>
-                    <a href="/">Contact</a>
-                    <a href="/">Agents</a>
-                    <a href="/">Sign in</a>
-                    <a href="/">Sign up</a>
+                    <Link to="/">Início</Link>
+                    <Link to="/list">Lista</Link>
+                    <Link to="/about">Sobre-Nós</Link>
+                    <Link to="/contact">Contato</Link>
+                    {!currentUser && (
+                        <>
+                            <Link to="/login">Entrar</Link>
+                            <Link to="/register">Registrar</Link>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>
