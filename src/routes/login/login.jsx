@@ -2,17 +2,12 @@ import { createContext, useContext, useState } from "react";
 import "./login.scss";
 import { Link, useNavigate } from "react-router-dom";
 import apiRequest from "../../lib/apiRequest";
-import { useUser } from "../../lib/UserContex"; 
-
+import { AuthContext } from "../../context/AuthContext";
 
 function Login() {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [success, setSuccess] = useState(null);
-    const { setUser } = useUser("");
-
-    //const UserContext = createContext();
-
+    const { updateUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -27,31 +22,29 @@ function Login() {
         const senha = formData.get("senha");
 
         try {
-            console.log('chamando API') 
+            console.log('chamando API')
             const res = await apiRequest.post("/auth/login", {
                 email,
                 senha,
             });
-            
+
             console.log('verificando status')
-    
+
             if (res.status === 200 || res.status === 201) {
 
                 const userData = res.data.usuario
-                setUser(userData);
+                // Atualizando o usuário no contexto
+                updateUser(res.data);
 
                 console.log('Resposta da API:', userData);
-
                 navigate("/");
             } else {
                 setError("Erro ao logar. Tente novamente.");
             }
 
         } catch (err) {
-            console.error('Erro ao fazer login:', error);
-            //setError(err.response.data.message);
-            setError(err.response?.data?.message || "Erro no login");
-
+            console.error('Erro ao fazer login:', err);
+            setError(err.response?.data?.message || "Erro no login. Tente novamente.");
         } finally {
             setIsLoading(false);
         }
@@ -59,7 +52,7 @@ function Login() {
     return (
         <div className="login">
             <div className="formContainer">
-                <form onSubmit={handleSubmit}> 
+                <form onSubmit={handleSubmit}>
                     <h1>Bem-vindo de volta</h1>
                     <input
                         name="email"
@@ -75,8 +68,10 @@ function Login() {
                         required
                         placeholder="Senha"
                     />
-                    <button disabled={isLoading}>Entrar</button>
-                    {error && <span>{error}</span>}
+                    <button disabled={isLoading}>
+                        {isLoading ? "Entrando..." : "Entrar"}
+                    </button>
+                    {error && <span className="error">{error}</span>}
                     <Link to="/register">Você não tem uma conta?</Link>
                 </form>
             </div>

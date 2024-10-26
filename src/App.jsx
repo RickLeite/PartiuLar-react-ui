@@ -4,7 +4,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import ListPage from "./routes/listPage/listPage";
-import Layout from "./routes/layout/layout";
+import { Layout, RequireAuth } from "./routes/layout/layout";
 import SinglePage from "./routes/singlePage/singlePage";
 import ProfilePage from "./routes/profilePage/profilePage";
 import Register from "./routes/register/register";
@@ -30,27 +30,38 @@ function App() {
           element: <SinglePage />
         },
         {
-          path: "/profile",
-          element: <ProfilePage />
+          path: "/login",
+          element: <Login />
         },
         {
           path: "/register",
           element: <Register />
         },
+      ],
+    },
+    {
+      path: "/",
+      element: <RequireAuth />,
+      children: [
         {
-          path: "/login",
-          element: <Login />
-        }
-      ]
-    }
+          path: "/profile",
+          element: <ProfilePage />
+        },
+      ],
+    },
   ]);
 
   return (
     <UserProvider>
       <RouterProvider router={router} />
     </UserProvider>
-      
+
   );
+
+  // modificar para return <RouterProvider router={router} />;
+  // posteriormente para utilizar AuthContext, devido a paginas que necessitam de autenticação
+
+
 }
 
 export default App;
