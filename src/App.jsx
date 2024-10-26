@@ -1,67 +1,80 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./routes/homePage/homePage";
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
 import ListPage from "./routes/listPage/listPage";
-import { Layout, RequireAuth } from "./routes/layout/layout";
+import { Layout } from "./routes/layout/layout";
 import SinglePage from "./routes/singlePage/singlePage";
 import ProfilePage from "./routes/profilePage/profilePage";
-import Register from "./routes/register/register";
 import Login from "./routes/login/login";
-import { UserProvider } from "./lib/UserContex";
+import Register from "./routes/register/register";
+import ProfileUpdatePage from "./routes/profileUpdatePage/profileUpdatePage";
+import NewPostPage from "./routes/newPostPage/newPostPage";
+import RequireAuth from "./components/RequireAuth/RequireAuth";
+import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary";
+import { listPageLoader, profilePageLoader, singlePageLoader } from "./lib/loaders";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Layout />,
+      errorElement: <ErrorBoundary />,
       children: [
         {
           path: "/",
-          element: <HomePage />
+          element: <HomePage />,
         },
         {
           path: "/list",
-          element: <ListPage />
+          element: <ListPage />,
+          loader: listPageLoader,
+          errorElement: <ErrorBoundary />
         },
         {
           path: "/:id",
-          element: <SinglePage />
+          element: <SinglePage />,
+          loader: singlePageLoader,
+          errorElement: <ErrorBoundary />
         },
         {
           path: "/login",
-          element: <Login />
+          element: <Login />,
         },
         {
           path: "/register",
-          element: <Register />
+          element: <Register />,
         },
       ],
     },
     {
       path: "/",
       element: <RequireAuth />,
+      errorElement: <ErrorBoundary />,
       children: [
         {
-          path: "/profile",
-          element: <ProfilePage />
+          path: "profile",
+          element: <ProfilePage />,
+          loader: profilePageLoader,
+          errorElement: <ErrorBoundary />
+        },
+        {
+          path: "profile/update",
+          element: <ProfileUpdatePage />,
+          errorElement: <ErrorBoundary />
+        },
+        {
+          path: "add",
+          element: <NewPostPage />,
+          errorElement: <ErrorBoundary />
         },
       ],
     },
+    {
+      path: "*",
+      element: <ErrorBoundary />
+    }
   ]);
 
-  return (
-    <UserProvider>
-      <RouterProvider router={router} />
-    </UserProvider>
-
-  );
-
-  // modificar para return <RouterProvider router={router} />;
-  // posteriormente para utilizar AuthContext, devido a paginas que necessitam de autenticação
-
-
+  return <RouterProvider router={router} />;
 }
 
 export default App;

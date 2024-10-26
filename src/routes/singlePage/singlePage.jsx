@@ -1,32 +1,65 @@
+import { useState, useEffect } from "react";
 import "./singlePage.scss";
 import Slider from "../../components/slider/Slider";
 import Map from "../../components/map/Map";
-import { singlePostData, userData } from "../../lib/dummydata";
+import apiRequest from "../../lib/apiRequest";
+import { useParams } from "react-router-dom";
 
 function SinglePage() {
-    const limitedImages = singlePostData.images.slice(0, 4);
+    const [post, setPost] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { id } = useParams();
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const response = await apiRequest.get(`/posts/${id}`);
+                setPost(response.data);
+            } catch (err) {
+                console.error("Error fetching post:", err);
+                setError(err.response?.data?.message || "Erro ao carregar post");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPost();
+    }, [id]);
+
+    if (loading) return <div>Carregando...</div>;
+    if (error) return <div>Erro: {error}</div>;
+    if (!post) return <div>Post não encontrado</div>;
+
+    // Parse the JSON string back to an array
+    const images = Array.isArray(post.img) ? post.img : JSON.parse(post.img);
 
     return (
         <div className="singlePage">
             <div className="details">
                 <div className="wrapper">
-                    <Slider images={singlePostData.images} showAllImages={false} />
+                    <Slider images={images} showAllImages={false} />
                     <div className="info">
                         <div className="top">
                             <div className="post">
-                                <h1>{singlePostData.title}</h1>
+                                <h1>{post.titulo}</h1>
                                 <div className="address">
                                     <img src="/pin.png" alt="" />
-                                    <span>{singlePostData.address}</span>
+                                    <span>{post.endereco}</span>
                                 </div>
-                                <div className="price">$ {singlePostData.price}</div>
+                                <div className="price">R$ {post.preco}</div>
                             </div>
-                            <div className="user">
-                                <img src={userData.img} alt="" />
-                                <span>{userData.name}</span>
-                            </div>
+                            {post.usuario && (
+                                <div className="user">
+                                    <img
+                                        src={post.usuario.avatar || "/noavatar.jpg"}
+                                        alt={post.usuario.nome}
+                                    />
+                                    <span>{post.usuario.nome}</span>
+                                </div>
+                            )}
                         </div>
-                        <div className="bottom">{singlePostData.description}</div>
+                        <div className="bottom">{post.descricao}</div>
                     </div>
                 </div>
             </div>
@@ -81,20 +114,25 @@ function SinglePage() {
                             </div>
                         </div>
                         <div className="feature">
-                            <img src="/pet.png" alt="" />
+                            <img src="/bus.png" alt="" />
                             <div className="featureText">
                                 <span>Ponto de Ônibus</span>
                                 <p>100m de distância</p>
                             </div>
                         </div>
                         <div className="feature">
-                            <img src="/fee.png" alt="" />
+                            <img src="/restaurant.png" alt="" />
                             <div className="featureText">
                                 <span>Restaurante</span>
                                 <p>200m de distância</p>
                             </div>
                         </div>
                     </div>
+                    {post.latitude && post.longitude && (
+                        <div className="mapContainer">
+                            <Map items={[post]} />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

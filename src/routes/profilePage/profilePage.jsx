@@ -1,61 +1,100 @@
 import Chat from "../../components/chat/Chat";
 import List from "../../components/list/List";
 import "./profilePage.scss";
-import {useState, useEffect } from "react";
 import apiRequest from "../../lib/apiRequest";
-import {useUser} from "../../lib/UserContex";
-
+import { Await, Link, useLoaderData, useNavigate } from "react-router-dom";
+import { Suspense, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 function ProfilePage() {
+    const data = useLoaderData();
+    const { updateUser, currentUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
-    const { user } = useUser(); // Aqui você acessa o usuário do contexto
-    const [profileData, setProfileData] = useState(null);
-    
-    useEffect(() => {
-        if (user?.id) {
-          document.getElementById("email").innerText = `${user.email}`;
-          document.getElementById("nome").innerText = `${user.nome}`;
-
+    const handleLogout = async () => {
+        try {
+            await apiRequest.post("/auth/logout");
+            updateUser(null);
+            navigate("/");
+        } catch (err) {
+            console.error("Erro ao fazer logout:", err);
         }
-      }, [user]);
+    };
+
+    // Early return if currentUser or currentUser.usuario is not available
+    if (!currentUser?.usuario) {
+        return <div>Carregando...</div>;
+    }
 
     return (
         <div className="profilePage">
             <div className="details">
                 <div className="wrapper">
                     <div className="title">
-                        <h1>Informação</h1>
-                        <button>Atualizar Perfil</button>
+                        <h1>Informações do Usuário</h1>
+                        <Link to="/profile/update">
+                            <button>Atualizar Perfil</button>
+                        </Link>
                     </div>
                     <div className="info">
                         <span>
                             Avatar:
                             <img
-                                src="https://www.webquarto.com.br/images/female_avatar.png"
-                                alt=""
+                                src={currentUser.usuario.avatar || "/noavatar.jpg"}
+                                alt={`Avatar de ${currentUser.usuario.nome}`}
                             />
                         </span>
-                        <span id="nome">
-                            Usuario: <b></b>
+                        <span>
+                            Nome: <b>{currentUser.usuario.nome}</b>
                         </span>
-                        <span id="email">
-                            E-mail: <b></b>
+                        <span>
+                            Email: <b>{currentUser.usuario.email}</b>
                         </span>
+                        <span>
+                            Telefone: <b>{currentUser.usuario.telefone}</b>
+                        </span>
+                        <span>
+                            Gênero: <b>{currentUser.usuario.genero}</b>
+                        </span>
+                        <button onClick={handleLogout}>Sair</button>
                     </div>
                     <div className="title">
-                        <h1>Minha Lista</h1>
-                        <button>Create New Post</button>
+                        <h1>Meus Anúncios</h1>
+                        <Link to="/add">
+                            <button>Criar Novo Anúncio</button>
+                        </Link>
                     </div>
-                    <List />
+                    <Suspense fallback={<p>Carregando...</p>}>
+                        <Await
+                            resolve={data.postResponse}
+                            errorElement={<p>Erro ao carregar anúncios!</p>}
+                        >
+                            {(postResponse) => <List posts={postResponse.data.userPosts} />}
+                        </Await>
+                    </Suspense>
                     <div className="title">
-                        <h1>Salvos</h1>
+                        <h1>Anúncios Salvos</h1>
                     </div>
-                    <List />
+                    <Suspense fallback={<p>Carregando...</p>}>
+                        <Await
+                            resolve={data.postResponse}
+                            errorElement={<p>Erro ao carregar anúncios salvos!</p>}
+                        >
+                            {(postResponse) => <List posts={postResponse.data.savedPosts} />}
+                        </Await>
+                    </Suspense>
                 </div>
             </div>
             <div className="chatContainer">
                 <div className="wrapper">
-                    <Chat />
+                    <Suspense fallback={<p>Carregando...</p>}>
+                        <Await
+                            resolve={data.chatResponse}
+                            errorElement={<p>Erro ao carregar conversas!</p>}
+                        >
+                            {(chatResponse) => <Chat chats={chatResponse.data} />}
+                        </Await>
+                    </Suspense>
                 </div>
             </div>
         </div>
