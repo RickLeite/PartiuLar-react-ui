@@ -33,7 +33,7 @@ function HomePage() {
                     <div className="heroSection">
                         <h1 className="title">
                             Com o PartiuLar encontre o seu{" "}
-                            <span className="highlight">lar universitário</span>
+                            <span className="highlight">Lar universitário</span>
                         </h1>
                         <p className="subtitle">
                             Repúblicas, Apartamentos compartilhados, Kitnets e muito mais
@@ -64,17 +64,12 @@ function HomePage() {
                         <h3>Por que escolher o PartiuLar?</h3>
                         <div className="feature-grid">
                             <div className="feature">
-                                <img src="/icons/security.svg" alt="Segurança" />
-                                <h4>Segurança Verificada</h4>
-                                <p>Todas as moradias são verificadas</p>
-                            </div>
-                            <div className="feature">
-                                <img src="/icons/location.svg" alt="Localização" />
+                                <img src="/university.png" alt="Localização" />
                                 <h4>Próximo à Universidade</h4>
                                 <p>Localizações estratégicas</p>
                             </div>
                             <div className="feature">
-                                <img src="/icons/support.svg" alt="Suporte" />
+                                <img src="/assistance.webp" alt="Suporte" />
                                 <h4>Suporte 24/7</h4>
                                 <p>Assistência quando precisar</p>
                             </div>
