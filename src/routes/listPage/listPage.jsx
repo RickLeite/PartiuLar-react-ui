@@ -1,15 +1,15 @@
+import { useState, Suspense } from "react";
 import "./listPage.scss";
 import Filter from "../../components/filter/Filter";
 import Card from "../../components/card/Card";
 import Map from "../../components/map/Map";
 import { Await, useLoaderData, useSearchParams } from "react-router-dom";
-import { Suspense } from "react";
 
 function ListPage() {
     const data = useLoaderData();
     const [searchParams] = useSearchParams();
 
-    // Custom loading component
+    // Loading component
     const LoadingPlaceholder = () => (
         <div className="loadingPlaceholder">
             <div className="spinner"></div>
@@ -17,10 +17,10 @@ function ListPage() {
         </div>
     );
 
-    // Custom error component
+    // Error component
     const ErrorDisplay = ({ message }) => (
         <div className="errorDisplay">
-            <img src="/error.png" alt="Error" />
+            <img src="/error-icon.png" alt="Error" />
             <h3>Ops! Algo deu errado</h3>
             <p>{message || "Erro ao carregar os anúncios"}</p>
         </div>
@@ -29,17 +29,38 @@ function ListPage() {
     // No results component
     const NoResults = () => (
         <div className="noResults">
-            <img src="/no-results.png" alt="No Results" />
+            <img src="/no-results-icon.png" alt="No Results" />
             <h3>Nenhum anúncio encontrado</h3>
             <p>Tente ajustar seus filtros de busca</p>
         </div>
     );
+
+    // Image processing function
+    const processImages = (img) => {
+        const placeholder = '/placeholder-house.jpg';
+
+        if (!img) return [placeholder];
+
+        if (typeof img === 'string') {
+            try {
+                const parsedImages = JSON.parse(img);
+                return Array.isArray(parsedImages) && parsedImages.length > 0
+                    ? parsedImages
+                    : [placeholder];
+            } catch {
+                return [placeholder];
+            }
+        }
+
+        return Array.isArray(img) && img.length > 0 ? img : [placeholder];
+    };
 
     return (
         <div className="listPage">
             <div className="listContainer">
                 <div className="wrapper">
                     <Filter initialParams={Object.fromEntries(searchParams)} />
+
                     <Suspense fallback={<LoadingPlaceholder />}>
                         <Await
                             resolve={data.postResponse}
@@ -59,12 +80,12 @@ function ListPage() {
                                                 key={post.id}
                                                 item={{
                                                     id: post.id,
-                                                    title: post.titulo,
-                                                    img: post.img?.[0] || '/placeholder.png',
+                                                    titulo: post.titulo,
+                                                    img: processImages(post.img)[0],
                                                     bedroom: post.quartos || 1,
                                                     bathroom: post.banheiros || 1,
-                                                    price: post.preco,
-                                                    address: post.endereco,
+                                                    preco: post.preco,
+                                                    endereco: post.endereco,
                                                     cidade: post.cidade,
                                                     estado: post.estado,
                                                     latitude: post.latitude,
@@ -80,6 +101,7 @@ function ListPage() {
                     </Suspense>
                 </div>
             </div>
+
             <div className="mapContainer">
                 <Suspense fallback={<LoadingPlaceholder />}>
                     <Await
@@ -89,9 +111,9 @@ function ListPage() {
                         {(postResponse) => (
                             <Map
                                 items={postResponse.data}
-                                centerLat={searchParams.get('lat') || -22.834560}
-                                centerLng={searchParams.get('lng') || -47.052783}
-                                zoom={searchParams.get('zoom') || 14}
+                                centerLat={searchParams.get('lat')}
+                                centerLng={searchParams.get('lng')}
+                                zoom={searchParams.get('zoom')}
                             />
                         )}
                     </Await>

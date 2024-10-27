@@ -1,54 +1,128 @@
 .filter {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
     h1 {
         font-weight: 300;
         font-size: 24px;
+        color: #333;
+
+        b {
+            color: #fece51;
+            font-weight: 600;
+        }
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
 
     .item {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 8px;
 
         label {
-            font-size: 10px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
         }
 
         input,
         select {
-            width: 100px;
+            width: 100%;
+            min-width: 120px;
             padding: 10px;
             border: 1px solid #e0e0e0;
             border-radius: 5px;
             font-size: 14px;
+            transition: all 0.3s ease;
+
+            &:focus {
+                outline: none;
+                border-color: #fece51;
+                box-shadow: 0 0 0 2px rgba(254, 206, 81, 0.2);
+            }
+
+            &::placeholder {
+                color: #999;
+            }
+
+            // Estilo para input number
+            &[type="number"] {
+                -moz-appearance: textfield;
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+            }
+        }
+
+        select {
+            cursor: pointer;
+            background-color: white;
+
+            option {
+                padding: 10px;
+            }
         }
     }
 
     .top {
-        input {
-            width: 100%;
+        .item {
+            input {
+                width: 100%;
+            }
         }
     }
 
     .bottom {
         display: flex;
-        justify-content: space-between;
         flex-wrap: wrap;
         gap: 20px;
+        align-items: flex-end;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+
+            .item {
+                width: 100%;
+            }
+        }
 
         button {
-            width: 100px;
-            padding: 10px;
+            height: 42px;
+            padding: 0 20px;
             border: none;
-            cursor: pointer;
+            border-radius: 5px;
             background-color: #fece51;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                background-color: darken(#fece51, 5%);
+                transform: translateY(-2px);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
 
             img {
-                width: 24px;
-                height: 24px;
+                width: 20px;
+                height: 20px;
             }
         }
     }

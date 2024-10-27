@@ -4,6 +4,7 @@ import Slider from "../../components/slider/Slider";
 import Map from "../../components/map/Map";
 import apiRequest from "../../lib/apiRequest";
 import { useParams } from "react-router-dom";
+import DOMPurify from "dompurify";
 
 function SinglePage() {
     const [post, setPost] = useState(null);
@@ -27,12 +28,29 @@ function SinglePage() {
         fetchPost();
     }, [id]);
 
-    if (loading) return <div>Carregando...</div>;
-    if (error) return <div>Erro: {error}</div>;
-    if (!post) return <div>Post não encontrado</div>;
+    if (loading) return <div className="loading">Carregando...</div>;
+    if (error) return <div className="error">Erro: {error}</div>;
+    if (!post) return <div className="not-found">Post não encontrado</div>;
 
     // Parse the JSON string back to an array
-    const images = Array.isArray(post.img) ? post.img : JSON.parse(post.img);
+    let images;
+    try {
+        images = Array.isArray(post.img) ? post.img : JSON.parse(post.img);
+    } catch (e) {
+        images = [];
+    }
+
+    // Use placeholder image if no images are available
+    if (!images || images.length === 0) {
+        images = ["/placeholder-house.jpg"];
+    }
+
+    // Sanitize the description HTML
+    const sanitizedDescription = DOMPurify.sanitize(post.descricao);
+
+    // Validação básica das coordenadas
+    const hasValidCoordinates = post.latitude && post.longitude &&
+        !isNaN(parseFloat(post.latitude)) && !isNaN(parseFloat(post.longitude));
 
     return (
         <div className="singlePage">
@@ -59,7 +77,7 @@ function SinglePage() {
                                 </div>
                             )}
                         </div>
-                        <div className="bottom">{post.descricao}</div>
+                        <div className="bottom" dangerouslySetInnerHTML={{ __html: sanitizedDescription }}></div>
                     </div>
                 </div>
             </div>
@@ -128,11 +146,19 @@ function SinglePage() {
                             </div>
                         </div>
                     </div>
-                    {post.latitude && post.longitude && (
-                        <div className="mapContainer">
-                            <Map items={[post]} />
-                        </div>
-                    )}
+                    <p className="title">Localização</p>
+                    <div className="mapContainer">
+                        {post && (
+                            <Map
+                                items={[{
+                                    ...post,
+                                    latitude: post.latitude,
+                                    longitude: post.longitude
+                                }]}
+                                isSinglePost={true}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

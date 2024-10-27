@@ -126,13 +126,6 @@ function Login() {
                         >
                             Você não tem uma conta?
                         </Link>
-                        <Link
-                            to="/forgot-password"
-                            className="forgotPassword"
-                            tabIndex={isLoading ? -1 : 0}
-                        >
-                            Esqueceu sua senha?
-                        </Link>
                     </div>
                 </form>
             </div>

@@ -16,7 +16,7 @@ const Register = () => {
         setIsLoading(true);
         const formData = new FormData(e.target);
 
-        const nome = formData.get("username");
+        const nome = formData.get("nome");
         const email = formData.get("email");
         const senha = formData.get("password");
         const telefone = formData.get("telefone");
@@ -52,8 +52,7 @@ const Register = () => {
             <div className="formContainer">
                 <form onSubmit={handleSubmit}>
                     <h1>Criar uma Conta</h1>  {success && <span>{success}</span>}
-                    <input name="username" type="text" placeholder="Nome" />
-                    <input name="username" type="text" placeholder="Nome" />
+                    <input name="nome" type="text" placeholder="Nome" />
                     <input name="email" type="email" placeholder="Email" />
                     <input name="telefone" type="text" placeholder="Telefone" />
                     <input name="password" type="password" placeholder="Senha" />

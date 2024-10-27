@@ -40,10 +40,7 @@ function NewPostPage() {
                 throw new Error("Preço inválido");
             }
 
-            // Validate images
-            if (images.length === 0) {
-                throw new Error("Adicione pelo menos uma imagem");
-            }
+
 
             // Prepare data according to Prisma schema
             const postData = {

@@ -132,3 +132,14 @@
         }
     }
 }
+
+@media (max-width: 768px) {
+    .card {
+        flex-direction: column;
+    }
+
+    .imageContainer {
+        display: flex;
+        height: auto;
+    }
+}
