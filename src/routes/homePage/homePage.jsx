@@ -30,49 +30,23 @@ function HomePage() {
         <div className="homePage">
             <div className="textContainer">
                 <div className="wrapper">
-                    <div className="heroSection">
-                        <h1 className="title">
-                            Com o PartiuLar encontre o seu{" "}
-                            <span className="highlight">Lar universitário</span>
-                        </h1>
-                        <p className="subtitle">
-                            Repúblicas, Apartamentos compartilhados, Kitnets e muito mais
-                            para sua vida acadêmica
-                        </p>
-                        <SearchBar />
-                        {!currentUser && (
-                            <div className="cta-buttons">
-                                <Link to="/register" className="register-btn">
-                                    Cadastre-se Gratuitamente
-                                </Link>
-                                <Link to="/about" className="learn-more-btn">
-                                    Saiba Mais
-                                </Link>
-                            </div>
-                        )}
-                    </div>
+                    <h1 className="title">Divida o espaço com quem combina com você.</h1>
+                    <p>
+                        Partiular conecta universitários em busca de moradia compartilhada, facilitando a escolha de colegas de quarto com interesses em comum. Nossa plataforma oferece uma experiência personalizada e segura, onde a convivência harmoniosa é prioridade.
+                    </p>
+                    <SearchBar />
                     <div className="boxes">
-                        {stats.map((stat, index) => (
-                            <div className="box" key={index}>
-                                <h1>{stat.number}</h1>
-                                <h2>{stat.label}</h2>
-                                <p>{stat.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="features">
-                        <h3>Por que escolher o PartiuLar?</h3>
-                        <div className="feature-grid">
-                            <div className="feature">
-                                <img src="/university.png" alt="Localização" />
-                                <h4>Próximo à Universidade</h4>
-                                <p>Localizações estratégicas</p>
-                            </div>
-                            <div className="feature">
-                                <img src="/assistance.webp" alt="Suporte" />
-                                <h4>Suporte 24/7</h4>
-                                <p>Assistência quando precisar</p>
-                            </div>
+                        <div className="box">
+                            <h1>5+</h1>
+                            <h2>Anos no mercado</h2>
+                        </div>
+                        <div className="box">
+                            <h1>2000+</h1>
+                            <h2>Casas disponíveis</h2>
+                        </div>
+                        <div className="box">
+                            <h1>10000+</h1>
+                            <h2>Usuários</h2>
                         </div>
                     </div>
                 </div>
