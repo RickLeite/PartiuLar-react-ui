@@ -16,7 +16,7 @@ const Register = () => {
         setIsLoading(true);
         const formData = new FormData(e.target);
 
-        const nome = formData.get("username");
+        const nome = formData.get("nome");
         const email = formData.get("email");
         const senha = formData.get("password");
         const telefone = formData.get("telefone");
@@ -51,7 +51,8 @@ const Register = () => {
         <div className="registerPage">
             <div className="formContainer">
                 <form onSubmit={handleSubmit}>
-                    <input name="username" type="text" placeholder="Nome" />
+                    <h1>Criar uma Conta</h1>  {success && <span>{success}</span>}
+                    <input name="nome" type="text" placeholder="Nome" />
                     <input name="email" type="email" placeholder="Email" />
                     <input name="telefone" type="text" placeholder="Telefone" />
                     <input name="password" type="password" placeholder="Senha" />
@@ -63,7 +64,9 @@ const Register = () => {
                         <input type="radio" id="other" name="genero" value="other" />
                         <label htmlFor="other">Outro</label>
                     </div>
-                    <button disabled={isLoading}>Registrar</button>
+                    <button disabled={isLoading}>
+                        {isLoading ? "Registrando..." : "Registrar"}
+                    </button>
                     {error && <span>{error}</span>}
                     <Link to="/login">Já tem uma conta?</Link>
                 </form>

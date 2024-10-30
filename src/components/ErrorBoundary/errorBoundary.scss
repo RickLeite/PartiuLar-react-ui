@@ -1,0 +1,101 @@
+// src/components/ErrorBoundary/errorBoundary.scss
+@import "../../responsive.scss";
+
+.errorPage {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    padding: 20px;
+
+    .errorContent {
+        max-width: 500px;
+        text-align: center;
+        padding: 40px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        img {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 24px;
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .errorActions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 24px;
+
+            @include sm {
+                flex-direction: column;
+            }
+
+            .primaryButton,
+            .secondaryButton {
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                border: none;
+                font-size: 14px;
+
+                &:hover {
+                    transform: translateY(-2px);
+                }
+            }
+
+            .primaryButton {
+                background-color: #fece51;
+                color: #333;
+
+                &:hover {
+                    background-color: adjust-color(#fece51, $lightness: -10%);
+                    transform: translateY(-2px);
+                }
+            }
+
+            .secondaryButton {
+                background-color: #f0f0f0;
+                color: #333;
+
+                &:hover {
+                    background-color: adjust-color(#f0f0f0, $lightness: -10%);
+                }
+            }
+        }
+
+        .errorDetails {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+
+            pre {
+                font-size: 12px;
+                color: #666;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+        }
+    }
+}

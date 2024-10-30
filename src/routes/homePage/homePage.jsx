@@ -1,7 +1,31 @@
+import { useContext } from "react";
 import SearchBar from "../../components/searchBar/SearchBar";
 import "./homePage.scss";
+import { AuthContext } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
+// import { motion } from "framer-motion";
 
 function HomePage() {
+    const { currentUser } = useContext(AuthContext);
+
+    const stats = [
+        {
+            number: "3",
+            label: "Anos de Mercado",
+            description: "Experiência em moradia universitária"
+        },
+        {
+            number: "PREMIADO",
+            label: "Pela Revista Veja e OGlobo",
+            description: "Reconhecimento nacional"
+        },
+        {
+            number: "270+",
+            label: "Repúblicas",
+            description: "Moradias disponíveis"
+        }
+    ];
+
     return (
         <div className="homePage">
             <div className="textContainer">
@@ -28,7 +52,20 @@ function HomePage() {
                 </div>
             </div>
             <div className="imgContainer">
-                <img src="/bg.png" alt="" />
+                <div className="overlay"></div>
+                <img
+                    src="/bg.png"
+                    alt="Estudantes em uma república"
+                    loading="eager"
+                />
+                {currentUser && (
+                    <div className="welcome-badge">
+                        <p>Bem-vindo de volta, {currentUser.usuario.nome}!</p>
+                        <Link to="/profile" className="profile-link">
+                            Ver Perfil
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     );

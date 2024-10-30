@@ -1,32 +1,83 @@
+import { useState, useEffect } from "react";
 import "./singlePage.scss";
 import Slider from "../../components/slider/Slider";
 import Map from "../../components/map/Map";
-import { singlePostData, userData } from "../../lib/dummydata";
+import apiRequest from "../../lib/apiRequest";
+import { useParams } from "react-router-dom";
+import DOMPurify from "dompurify";
 
 function SinglePage() {
-    const limitedImages = singlePostData.images.slice(0, 4);
+    const [post, setPost] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { id } = useParams();
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const response = await apiRequest.get(`/posts/${id}`);
+                setPost(response.data);
+            } catch (err) {
+                console.error("Error fetching post:", err);
+                setError(err.response?.data?.message || "Erro ao carregar post");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPost();
+    }, [id]);
+
+    if (loading) return <div className="loading">Carregando...</div>;
+    if (error) return <div className="error">Erro: {error}</div>;
+    if (!post) return <div className="not-found">Post não encontrado</div>;
+
+    // Parse the JSON string back to an array
+    let images;
+    try {
+        images = Array.isArray(post.img) ? post.img : JSON.parse(post.img);
+    } catch (e) {
+        images = [];
+    }
+
+    // Use placeholder image if no images are available
+    if (!images || images.length === 0) {
+        images = ["/placeholder-house.jpg"];
+    }
+
+    // Sanitize the description HTML
+    const sanitizedDescription = DOMPurify.sanitize(post.descricao);
+
+    // Validação básica das coordenadas
+    const hasValidCoordinates = post.latitude && post.longitude &&
+        !isNaN(parseFloat(post.latitude)) && !isNaN(parseFloat(post.longitude));
 
     return (
         <div className="singlePage">
             <div className="details">
                 <div className="wrapper">
-                    <Slider images={singlePostData.images} showAllImages={false} />
+                    <Slider images={images} showAllImages={false} />
                     <div className="info">
                         <div className="top">
                             <div className="post">
-                                <h1>{singlePostData.title}</h1>
+                                <h1>{post.titulo}</h1>
                                 <div className="address">
                                     <img src="/pin.png" alt="" />
-                                    <span>{singlePostData.address}</span>
+                                    <span>{post.endereco}</span>
                                 </div>
-                                <div className="price">$ {singlePostData.price}</div>
+                                <div className="price">R$ {post.preco}</div>
                             </div>
-                            <div className="user">
-                                <img src={userData.img} alt="" />
-                                <span>{userData.name}</span>
-                            </div>
+                            {post.usuario && (
+                                <div className="user">
+                                    <img
+                                        src={post.usuario.avatar || "/noavatar.jpg"}
+                                        alt={post.usuario.nome}
+                                    />
+                                    <span>{post.usuario.nome}</span>
+                                </div>
+                            )}
                         </div>
-                        <div className="bottom">{singlePostData.description}</div>
+                        <div className="bottom" dangerouslySetInnerHTML={{ __html: sanitizedDescription }}></div>
                     </div>
                 </div>
             </div>
@@ -81,19 +132,32 @@ function SinglePage() {
                             </div>
                         </div>
                         <div className="feature">
-                            <img src="/pet.png" alt="" />
+                            <img src="/bus.png" alt="" />
                             <div className="featureText">
                                 <span>Ponto de Ônibus</span>
                                 <p>100m de distância</p>
                             </div>
                         </div>
                         <div className="feature">
-                            <img src="/fee.png" alt="" />
+                            <img src="/restaurant.png" alt="" />
                             <div className="featureText">
                                 <span>Restaurante</span>
                                 <p>200m de distância</p>
                             </div>
                         </div>
+                    </div>
+                    <p className="title">Localização</p>
+                    <div className="mapContainer">
+                        {post && (
+                            <Map
+                                items={[{
+                                    ...post,
+                                    latitude: post.latitude,
+                                    longitude: post.longitude
+                                }]}
+                                isSinglePost={true}
+                            />
+                        )}
                     </div>
                 </div>
             </div>
