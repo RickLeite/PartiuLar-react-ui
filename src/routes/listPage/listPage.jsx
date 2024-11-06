@@ -29,7 +29,7 @@ function ListPage() {
     // No results component
     const NoResults = () => (
         <div className="noResults">
-            <img src="/no-results-icon.png" alt="No Results" />
+            <img src="/no-results-icon.png" alt="Sem resultados" />
             <h3>Nenhum anúncio encontrado</h3>
             <p>Tente ajustar seus filtros de busca</p>
         </div>
