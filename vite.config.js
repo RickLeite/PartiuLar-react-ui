@@ -1,3 +1,6 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -6,17 +9,21 @@ export default defineConfig({
     strictPort: true,
     hmr: {
       protocol: 'ws',
-      host: process.env.WSL_IP || '0.0.0.0'
+      host: '172.21.171.4'
     },
     watch: {
       usePolling: true
     },
     proxy: {
       '/api': {
-        target: `http://${process.env.WSL_IP || '0.0.0.0'}:3000`,
+        target: 'http://172.21.171.4:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
+  },
+  preview: {
+    port: 5173,
+    strictPort: true,
   }
 })
