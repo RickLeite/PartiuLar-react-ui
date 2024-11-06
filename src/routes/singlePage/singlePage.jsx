@@ -83,70 +83,48 @@ function SinglePage() {
             </div>
             <div className="features">
                 <div className="wrapper">
-                    <p className="title">Geral</p>
-                    <div className="listVertical">
-                        <div className="feature">
-                            <img src="/utility.png" alt="" />
-                            <div className="featureText">
-                                <span>Utilidades</span>
-                                <p>Responsabilidade do inquilino</p>
-                            </div>
+                    {/* Área para características dinâmicas da propriedade */}
+                    {post.caracteristicas && (
+                        <div className="listVertical">
+                            {post.caracteristicas.map((caracteristica, index) => (
+                                <div key={index} className="feature">
+                                    <img src={caracteristica.icone} alt="" />
+                                    <div className="featureText">
+                                        <span>{caracteristica.titulo}</span>
+                                        <p>{caracteristica.descricao}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <div className="feature">
-                            <img src="/pet.png" alt="" />
-                            <div className="featureText">
-                                <span>Política de Animais</span>
-                                <p>Animais Permitidos</p>
-                            </div>
+                    )}
+
+                    {/* Área para informações de tamanho e cômodos */}
+                    {post.detalhes && (
+                        <div className="sizes">
+                            {post.detalhes.map((detalhe, index) => (
+                                <div key={index} className="size">
+                                    <img src={detalhe.icone} alt="" />
+                                    <span>{detalhe.valor}</span>
+                                </div>
+                            ))}
                         </div>
-                        <div className="feature">
-                            <img src="/fee.png" alt="" />
-                            <div className="featureText">
-                                <span>Taxas da Propriedade</span>
-                                <p>Deve ter 3x o aluguel em renda familiar total</p>
-                            </div>
+                    )}
+
+                    {/* Área para pontos de interesse próximos */}
+                    {post.pontosProximos && (
+                        <div className="listHorizontal">
+                            {post.pontosProximos.map((ponto, index) => (
+                                <div key={index} className="feature">
+                                    <img src={ponto.icone} alt="" />
+                                    <div className="featureText">
+                                        <span>{ponto.titulo}</span>
+                                        <p>{ponto.distancia}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </div>
-                    <p className="title">Tamanhos</p>
-                    <div className="sizes">
-                        <div className="size">
-                            <img src="/size.png" alt="" />
-                            <span>80 m²</span>
-                        </div>
-                        <div className="size">
-                            <img src="/bed.png" alt="" />
-                            <span>2 camas</span>
-                        </div>
-                        <div className="size">
-                            <img src="/bath.png" alt="" />
-                            <span>1 banheiro</span>
-                        </div>
-                    </div>
-                    <p className="title">Lugares Próximos</p>
-                    <div className="listHorizontal">
-                        <div className="feature">
-                            <img src="/school.png" alt="" />
-                            <div className="featureText">
-                                <span>Escola</span>
-                                <p>250m de distância</p>
-                            </div>
-                        </div>
-                        <div className="feature">
-                            <img src="/bus.png" alt="" />
-                            <div className="featureText">
-                                <span>Ponto de Ônibus</span>
-                                <p>100m de distância</p>
-                            </div>
-                        </div>
-                        <div className="feature">
-                            <img src="/restaurant.png" alt="" />
-                            <div className="featureText">
-                                <span>Restaurante</span>
-                                <p>200m de distância</p>
-                            </div>
-                        </div>
-                    </div>
-                    <p className="title">Localização</p>
+                    )}
+
                     <div className="mapContainer">
                         {post && (
                             <Map
