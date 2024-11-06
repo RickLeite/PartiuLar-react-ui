@@ -57,11 +57,11 @@ const Register = () => {
                     <input name="telefone" type="text" placeholder="Telefone" />
                     <input name="password" type="password" placeholder="Senha" />
                     <div className="genderSelection">
-                        <input type="radio" id="male" name="genero" value="male" />
+                        <input type="radio" id="male" name="genero" value="masculino" />
                         <label htmlFor="male">Masculino</label>
-                        <input type="radio" id="female" name="genero" value="female" />
+                        <input type="radio" id="female" name="genero" value="feminino" />
                         <label htmlFor="female">Feminino</label>
-                        <input type="radio" id="other" name="genero" value="other" />
+                        <input type="radio" id="other" name="genero" value="outro" />
                         <label htmlFor="other">Outro</label>
                     </div>
                     <button disabled={isLoading}>
