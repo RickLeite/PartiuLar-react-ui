@@ -97,7 +97,6 @@ function NewPostPage() {
                             <label htmlFor="tipo">Tipo</label>
                             <select name="tipo" id="tipo">
                                 <option value="aluguel">Aluguel</option>
-                                <option value="venda">Venda</option>
                             </select>
                         </div>
                         <div className="item">
