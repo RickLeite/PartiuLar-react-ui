@@ -1,28 +1,33 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import SearchBar from "../../components/searchBar/SearchBar";
 import "./homePage.scss";
 import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
-// import { motion } from "framer-motion";
 
 function HomePage() {
     const { currentUser } = useContext(AuthContext);
 
+    useEffect(() => {
+        // Adiciona classe de fade-in quando o componente monta
+        const textContainer = document.querySelector('.textContainer');
+        const imgContainer = document.querySelector('.imgContainer');
+
+        if (textContainer) textContainer.classList.add('fade-in');
+        if (imgContainer) imgContainer.classList.add('slide-in');
+    }, []);
+
     const stats = [
         {
-            number: "3",
-            label: "Anos de Mercado",
-            description: "Experiência em moradia universitária"
+            number: "5+",
+            label: "Anos no mercado"
         },
         {
-            number: "PREMIADO",
-            label: "Pela Revista Veja e OGlobo",
-            description: "Reconhecimento nacional"
+            number: "2000+",
+            label: "Casas disponíveis"
         },
         {
-            number: "270+",
-            label: "Repúblicas",
-            description: "Moradias disponíveis"
+            number: "10000+",
+            label: "Usuários"
         }
     ];
 
@@ -30,24 +35,26 @@ function HomePage() {
         <div className="homePage">
             <div className="textContainer">
                 <div className="wrapper">
-                    <h1 className="title">Divida o espaço com quem combina com você.</h1>
-                    <p>
-                        Partiular conecta universitários em busca de moradia compartilhada, facilitando a escolha de colegas de quarto com interesses em comum. Nossa plataforma oferece uma experiência personalizada e segura, onde a convivência harmoniosa é prioridade.
+                    <h1 className="title">
+                        Divida o espaço com quem combina com você
+                        <span className="title-dot">.</span>
+                    </h1>
+                    <p className="subtitle">
+                        Partiular conecta universitários em busca de moradia compartilhada,
+                        facilitando a escolha de colegas de quarto com interesses em comum.
+                        Nossa plataforma oferece uma experiência personalizada e segura,
+                        onde a convivência harmoniosa é prioridade.
                     </p>
-                    <SearchBar />
+                    <div className="search-section">
+                        <SearchBar />
+                    </div>
                     <div className="boxes">
-                        <div className="box">
-                            <h1>5+</h1>
-                            <h2>Anos no mercado</h2>
-                        </div>
-                        <div className="box">
-                            <h1>2000+</h1>
-                            <h2>Casas disponíveis</h2>
-                        </div>
-                        <div className="box">
-                            <h1>10000+</h1>
-                            <h2>Usuários</h2>
-                        </div>
+                        {stats.map((stat, index) => (
+                            <div className="box" key={index}>
+                                <h1>{stat.number}</h1>
+                                <h2>{stat.label}</h2>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

@@ -43,20 +43,6 @@ function Card({ item }) {
                 </p>
                 <p className="preco">$ {item.preco?.toLocaleString('pt-BR') || "Preço não disponível"}</p>
                 <div className="bottom">
-                    <div className="features">
-                        {item.bedroom !== undefined && (
-                            <div className="feature">
-                                <img src="/bed.png" alt="Bedroom Icon" />
-                                <span>{item.bedroom} quarto{item.bedroom !== 1 ? "s" : ""}</span>
-                            </div>
-                        )}
-                        {item.bathroom !== undefined && (
-                            <div className="feature">
-                                <img src="/bath.png" alt="Bathroom Icon" />
-                                <span>{item.bathroom} banheiro{item.bathroom !== 1 ? "s" : ""}</span>
-                            </div>
-                        )}
-                    </div>
                     <div className="icons">
                         <div className="icon">
                             <img src="/chat.png" alt="Chat Icon" />
