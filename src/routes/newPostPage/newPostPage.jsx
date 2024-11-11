@@ -11,8 +11,56 @@ function NewPostPage() {
     const [images, setImages] = useState([]);
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isFetchingCEP, setIsFetchingCEP] = useState(false);
     const { currentUser } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    // Estados para os campos de endereço
+    const [endereco, setEndereco] = useState("");
+    const [cidade, setCidade] = useState("Campinas");
+    const [estado, setEstado] = useState("SP");
+
+    const formatCEP = (value) => {
+        const numbers = value.replace(/\D/g, '');
+        return numbers.replace(/(\d{5})(\d{3})/, '$1-$2');
+    };
+
+    const fetchAddressData = async (cep) => {
+        const cleanCEP = cep.replace(/\D/g, '');
+        if (cleanCEP.length !== 8) return;
+
+        setIsFetchingCEP(true);
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cleanCEP}/json/`);
+            const data = await response.json();
+
+            if (!data.erro) {
+                const enderecoFormatado = `${data.logradouro}${data.bairro ? `, ${data.bairro}` : ''}`;
+                setEndereco(enderecoFormatado);
+                setCidade(data.localidade || "Campinas");
+                setEstado(data.uf || "SP");
+            } else if (osmData && osmData.length > 0) {
+                const addressParts = osmData[0].display_name.split(', ');
+                setEndereco(addressParts[0] || "");
+                setCidade(addressParts.find(part => part.includes("Campinas")) || "Campinas");
+                setEstado("SP");
+            }
+        } catch (err) {
+            console.error("Erro ao buscar CEP:", err);
+        } finally {
+            setIsFetchingCEP(false);
+        }
+    };
+
+    const handleCEPChange = async (e) => {
+        const input = e.target;
+        const formattedCEP = formatCEP(input.value);
+        input.value = formattedCEP;
+
+        if (formattedCEP.length === 9) { // CEP completo (12345-678)
+            await fetchAddressData(formattedCEP);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -28,7 +76,7 @@ function NewPostPage() {
             }
 
             // Validate required fields
-            const requiredFields = ['titulo', 'preco', 'endereco', 'cidade', 'estado'];
+            const requiredFields = ['titulo', 'preco', 'endereco', 'cidade', 'estado', 'cep'];
             for (const field of requiredFields) {
                 if (!inputs[field]) {
                     throw new Error(`Campo ${field} é obrigatório`);
@@ -40,25 +88,35 @@ function NewPostPage() {
                 throw new Error("Preço inválido");
             }
 
-
+            // Validate CEP format
+            const cepRegex = /^\d{5}-?\d{3}$/;
+            if (!cepRegex.test(inputs.cep)) {
+                throw new Error("Formato de CEP inválido");
+            }
 
             // Prepare data according to Prisma schema
             const postData = {
                 titulo: inputs.titulo,
                 preco: parseInt(inputs.preco),
                 descricao: descricao,
-                img: JSON.stringify(images), // Convert array to JSON string
+                img: JSON.stringify(images),
                 endereco: inputs.endereco,
                 cidade: inputs.cidade,
                 estado: inputs.estado,
-                latitude: inputs.latitude || "0",
-                longitude: inputs.longitude || "0"
+                cep: inputs.cep,
+                tipo: inputs.tipo || "aluguel",
+                propriedade: inputs.propriedade || "apartamento"
             };
 
             console.log('Enviando dados do post:', postData);
 
             const res = await apiRequest.post("/posts", postData);
             console.log('Resposta da criação do post:', res.data);
+
+            // Se houver avisos na resposta, mostre-os mas não impeça a navegação
+            if (res.data.warnings) {
+                console.warn('Avisos:', res.data.warnings);
+            }
 
             navigate("/" + res.data.id);
         } catch (err) {
@@ -68,6 +126,7 @@ function NewPostPage() {
             setIsLoading(false);
         }
     };
+
     if (!currentUser) {
         navigate("/login");
         return null;
@@ -84,7 +143,7 @@ function NewPostPage() {
                             <input id="titulo" name="titulo" type="text" required />
                         </div>
                         <div className="item">
-                            <label htmlFor="preco">Preço</label>
+                            <label htmlFor="preco">Preço (R$)</label>
                             <input
                                 id="preco"
                                 name="preco"
@@ -109,33 +168,52 @@ function NewPostPage() {
                             </select>
                         </div>
                         <div className="item">
-                            <label htmlFor="endereco">Endereço</label>
-                            <input id="endereco" name="endereco" type="text" required />
-                        </div>
-                        <div className="item">
-                            <label htmlFor="cidade">Cidade</label>
-                            <input id="cidade" name="cidade" type="text" required />
-                        </div>
-                        <div className="item">
-                            <label htmlFor="estado">Estado</label>
-                            <input id="estado" name="estado" type="text" required />
-                        </div>
-                        <div className="item">
-                            <label htmlFor="latitude">Latitude</label>
+                            <label htmlFor="cep">CEP</label>
                             <input
-                                id="latitude"
-                                name="latitude"
+                                id="cep"
+                                name="cep"
                                 type="text"
-                                placeholder="Opcional"
+                                required
+                                maxLength="9"
+                                placeholder="12345-678"
+                                onChange={handleCEPChange}
+                                disabled={isFetchingCEP}
                             />
                         </div>
                         <div className="item">
-                            <label htmlFor="longitude">Longitude</label>
+                            <label htmlFor="endereco">Endereço</label>
                             <input
-                                id="longitude"
-                                name="longitude"
+                                id="endereco"
+                                name="endereco"
                                 type="text"
-                                placeholder="Opcional"
+                                required
+                                value={endereco}
+                                onChange={(e) => setEndereco(e.target.value)}
+                                disabled={isFetchingCEP}
+                            />
+                        </div>
+                        <div className="item">
+                            <label htmlFor="cidade">Cidade</label>
+                            <input
+                                id="cidade"
+                                name="cidade"
+                                type="text"
+                                required
+                                value={cidade}
+                                onChange={(e) => setCidade(e.target.value)}
+                                disabled={isFetchingCEP}
+                            />
+                        </div>
+                        <div className="item">
+                            <label htmlFor="estado">Estado</label>
+                            <input
+                                id="estado"
+                                name="estado"
+                                type="text"
+                                required
+                                value={estado}
+                                onChange={(e) => setEstado(e.target.value)}
+                                disabled={isFetchingCEP}
                             />
                         </div>
                         <div className="item description">
@@ -185,7 +263,7 @@ function NewPostPage() {
                         <button
                             type="submit"
                             className="sendButton"
-                            disabled={isLoading || !descricao}
+                            disabled={isLoading || !descricao || isFetchingCEP}
                         >
                             {isLoading ? "Publicando..." : "Publicar Anúncio"}
                         </button>

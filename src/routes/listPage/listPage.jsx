@@ -82,8 +82,6 @@ function ListPage() {
                                                     id: post.id,
                                                     titulo: post.titulo,
                                                     img: processImages(post.img)[0],
-                                                    bedroom: post.quartos || 1,
-                                                    bathroom: post.banheiros || 1,
                                                     preco: post.preco,
                                                     endereco: post.endereco,
                                                     cidade: post.cidade,
