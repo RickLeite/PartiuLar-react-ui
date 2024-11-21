@@ -5,6 +5,7 @@ import "react-quill/dist/quill.snow.css";
 import apiRequest from "../../lib/apiRequest";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import UploadWidget from "../../components/uploadWidget/UploadWidget";
 
 function NewPostPage() {
     const [descricao, setDescricao] = useState("");
@@ -39,11 +40,6 @@ function NewPostPage() {
                 setEndereco(enderecoFormatado);
                 setCidade(data.localidade || "Campinas");
                 setEstado(data.uf || "SP");
-            } else if (osmData && osmData.length > 0) {
-                const addressParts = osmData[0].display_name.split(', ');
-                setEndereco(addressParts[0] || "");
-                setCidade(addressParts.find(part => part.includes("Campinas")) || "Campinas");
-                setEstado("SP");
             }
         } catch (err) {
             console.error("Erro ao buscar CEP:", err);
@@ -57,7 +53,7 @@ function NewPostPage() {
         const formattedCEP = formatCEP(input.value);
         input.value = formattedCEP;
 
-        if (formattedCEP.length === 9) { // CEP completo (12345-678)
+        if (formattedCEP.length === 9) {
             await fetchAddressData(formattedCEP);
         }
     };
@@ -108,12 +104,8 @@ function NewPostPage() {
                 propriedade: inputs.propriedade || "apartamento"
             };
 
-            console.log('Enviando dados do post:', postData);
-
             const res = await apiRequest.post("/posts", postData);
-            console.log('Resposta da criação do post:', res.data);
 
-            // Se houver avisos na resposta, mostre-os mas não impeça a navegação
             if (res.data.warnings) {
                 console.warn('Avisos:', res.data.warnings);
             }
@@ -125,6 +117,10 @@ function NewPostPage() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleRemoveImage = (indexToRemove) => {
+        setImages(images.filter((_, index) => index !== indexToRemove));
     };
 
     if (!currentUser) {
@@ -224,42 +220,6 @@ function NewPostPage() {
                                 value={descricao}
                             />
                         </div>
-                        <div className="item">
-                            <label>URLs das Imagens</label>
-                            <div className="image-urls">
-                                {images.map((url, index) => (
-                                    <div key={index} className="image-input-container">
-                                        <input
-                                            type="url"
-                                            value={url}
-                                            onChange={(e) => {
-                                                const newImages = [...images];
-                                                newImages[index] = e.target.value;
-                                                setImages(newImages);
-                                            }}
-                                            placeholder="http://exemplo.com/imagem.jpg"
-                                        />
-                                        <button
-                                            type="button"
-                                            className="remove-image-btn"
-                                            onClick={() => {
-                                                const newImages = images.filter((_, i) => i !== index);
-                                                setImages(newImages);
-                                            }}
-                                        >
-                                            X
-                                        </button>
-                                    </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    className="add-image-btn"
-                                    onClick={() => setImages([...images, ""])}
-                                >
-                                    + Adicionar imagem
-                                </button>
-                            </div>
-                        </div>
                         <button
                             type="submit"
                             className="sendButton"
@@ -273,15 +233,30 @@ function NewPostPage() {
             </div>
             <div className="sideContainer">
                 {images.map((url, index) => (
-                    url && (
+                    <div key={index} className="imageContainer">
                         <img
-                            key={index}
                             src={url}
                             alt={`Preview ${index + 1}`}
-                            onError={(e) => e.target.style.display = 'none'}
+                            onError={(e) => e.target.classList.add('error')}
                         />
-                    )
+                        <button
+                            onClick={() => handleRemoveImage(index)}
+                            className="removeButton"
+                        >
+                            Remover
+                        </button>
+                    </div>
                 ))}
+                <UploadWidget
+                    uwConfig={{
+                        cloudName: "lamadev",
+                        uploadPreset: "estate",
+                        multiple: true,
+                        maxImageFileSize: 2000000,
+                        folder: "properties",
+                    }}
+                    setState={setImages}
+                />
             </div>
         </div>
     );

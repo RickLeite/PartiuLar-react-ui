@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import { MessageSquare } from "lucide-react";
+import { toast } from "sonner";
 import DOMPurify from "dompurify";
 import Slider from "../../components/slider/Slider";
 import Map from "../../components/map/Map";
@@ -38,13 +41,22 @@ const PropertyHeader = ({ title, address, price }) => (
 );
 
 // Component for user information
-const UserInfo = ({ user }) => (
+const UserInfo = ({ user, onChatClick }) => (
     <div className="user">
         <img
             src={user?.avatar || AvatarPlaceholder}
             alt={user?.nome}
         />
         <span>{user?.nome}</span>
+        {onChatClick && (
+            <button
+                onClick={onChatClick}
+                className="chat-button"
+                title="Iniciar conversa"
+            >
+                <MessageSquare size={20} />
+            </button>
+        )}
     </div>
 );
 
@@ -107,11 +119,72 @@ const ErrorState = ({ message }) => (
     </div>
 );
 
+
 function SinglePage() {
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { id } = useParams();
+    const navigate = useNavigate();
+    const { currentUser } = useContext(AuthContext);
+
+    const handleChatClick = async (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Verificar se tem usuário logado
+        if (!currentUser) {
+            toast.error("Você precisa estar logado para iniciar uma conversa");
+            navigate("/login");
+            return;
+        }
+
+        // Verificar dados do anunciante
+        const postOwnerId = post.usuario?.id;
+        if (!postOwnerId) {
+            toast.error("Não foi possível identificar o anunciante");
+            return;
+        }
+
+        // Verificar se não está tentando conversar consigo mesmo
+        if (currentUser.usuario.id === postOwnerId) {
+            toast.error("Você não pode iniciar uma conversa com você mesmo");
+            return;
+        }
+
+        try {
+            // Mostrar loading
+            const loadingToast = toast.loading("Iniciando conversa...");
+
+            // Criar chat
+            const response = await apiRequest.post("/chats", {
+                receiverId: postOwnerId
+            });
+
+            // Remover loading
+            toast.dismiss(loadingToast);
+
+            if (response.status === 201 || response.status === 200) {
+                toast.success("Chat iniciado com sucesso!");
+                navigate("/profile");
+            }
+        } catch (error) {
+            console.error("Erro ao criar chat:", error);
+
+            if (error.response?.status === 403) {
+                toast.error("Você não tem permissão para iniciar esta conversa");
+            } else if (error.response?.status === 404) {
+                toast.error("Usuário não encontrado");
+            } else if (error.response?.status === 401) {
+                toast.error("Sua sessão expirou. Por favor, faça login novamente");
+                navigate("/login");
+            } else {
+                toast.error("Erro ao iniciar conversa. Tente novamente mais tarde");
+            }
+        }
+    };
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -152,7 +225,12 @@ function SinglePage() {
                                 address={post.endereco}
                                 price={post.preco}
                             />
-                            {post.usuario && <UserInfo user={post.usuario} />}
+                            {post.usuario && (
+                                <UserInfo
+                                    user={post.usuario}
+                                    onChatClick={handleChatClick}
+                                />
+                            )}
                         </div>
                         <div
                             className="bottom description"
