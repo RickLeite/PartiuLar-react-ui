@@ -15,16 +15,15 @@ function ProfilePage() {
         try {
             await apiRequest.post("/auth/logout");
             updateUser(null);
-            localStorage.removeItem("user"); // Garantindo que o localStorage também seja limpo
+            localStorage.removeItem("user");
             navigate("/");
         } catch (err) {
             console.error("Erro ao fazer logout:", err);
         }
     };
 
-    // Early return if currentUser or currentUser.usuario is not available
     if (!currentUser?.usuario) {
-        return <div>Carregando...</div>;
+        return <div className="loading">Carregando...</div>;
     }
 
     return (
@@ -52,12 +51,16 @@ function ProfilePage() {
                         <span>
                             Email: <b>{currentUser.usuario.email}</b>
                         </span>
-                        <span>
-                            Telefone: <b>{currentUser.usuario.telefone}</b>
-                        </span>
-                        <span>
-                            Gênero: <b>{currentUser.usuario.genero}</b>
-                        </span>
+                        {currentUser.usuario.telefone && (
+                            <span>
+                                Telefone: <b>{currentUser.usuario.telefone}</b>
+                            </span>
+                        )}
+                        {currentUser.usuario.genero && (
+                            <span>
+                                Gênero: <b>{currentUser.usuario.genero}</b>
+                            </span>
+                        )}
                         <button onClick={handleLogout}>Sair</button>
                     </div>
 
@@ -172,6 +175,6 @@ function ProfilePage() {
             </div>
         </div>
     );
-};
+}
 
 export default ProfilePage;

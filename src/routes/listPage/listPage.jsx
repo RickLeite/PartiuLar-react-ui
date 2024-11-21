@@ -68,6 +68,7 @@ function ListPage() {
                         >
                             {(postResponse) => {
                                 const posts = postResponse.data;
+                                console.log("Posts data:", posts); // Debug log
 
                                 if (!posts || posts.length === 0) {
                                     return <NoResults />;
@@ -75,23 +76,38 @@ function ListPage() {
 
                                 return (
                                     <div className="cardsGrid">
-                                        {posts.map(post => (
-                                            <Card
-                                                key={post.id}
-                                                item={{
-                                                    id: post.id,
-                                                    titulo: post.titulo,
-                                                    img: processImages(post.img)[0],
-                                                    preco: post.preco,
-                                                    endereco: post.endereco,
-                                                    cidade: post.cidade,
-                                                    estado: post.estado,
-                                                    latitude: post.latitude,
-                                                    longitude: post.longitude,
-                                                    usuario: post.usuario
-                                                }}
-                                            />
-                                        ))}
+                                        {posts.map(post => {
+                                            // Debug log para cada post
+                                            console.log("Processing post:", post);
+
+                                            // Garantir que todos os dados necessários estão presentes
+                                            const processedPost = {
+                                                id: post.id,
+                                                titulo: post.titulo,
+                                                img: processImages(post.img)[0],
+                                                preco: post.preco,
+                                                endereco: post.endereco,
+                                                cidade: post.cidade,
+                                                estado: post.estado,
+                                                latitude: post.latitude,
+                                                longitude: post.longitude,
+                                                usuario: {
+                                                    id: post.usuario?.id,
+                                                    nome: post.usuario?.nome,
+                                                    avatar: post.usuario?.avatar
+                                                }
+                                            };
+
+                                            // Debug log do post processado
+                                            console.log("Processed post:", processedPost);
+
+                                            return (
+                                                <Card
+                                                    key={post.id}
+                                                    item={processedPost}
+                                                />
+                                            );
+                                        })}
                                     </div>
                                 );
                             }}

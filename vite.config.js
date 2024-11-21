@@ -3,27 +3,28 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    host: '0.0.0.0',
-    port: 5173,
-    strictPort: true,
-    hmr: {
-      protocol: 'ws',
-      host: '172.21.171.4'
-    },
-    watch: {
-      usePolling: true
-    },
-    proxy: {
-      '/api': {
-        target: 'http://172.21.171.4:3000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
+        logger: { warn: () => { } }
       }
     }
   },
-  preview: {
+  server: {
+    host: true,
     port: 5173,
-    strictPort: true,
+    cors: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8800',
+        changeOrigin: true,
+        secure: false
+      },
+      '/socket.io': {
+        target: 'ws://localhost:4000',
+        ws: true
+      }
+    }
   }
 })
