@@ -6,13 +6,14 @@ import { useNotificationStore } from "../../lib/notificationStore";
 import apiRequest from "../../lib/apiRequest";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
+import { MessageSquare, Send, User, X, CheckCheck, Clock, AlertCircle, Search } from "lucide-react";
 
 function Chat({ chats: initialChats }) {
     const [chats, setChats] = useState(initialChats);
     const [chat, setChat] = useState(null);
     const [loading, setLoading] = useState(false);
     const [typing, setTyping] = useState({});
+    const [searchTerm, setSearchTerm] = useState("");
     const { currentUser } = useContext(AuthContext);
     const { socket, isUserOnline, sendMessage, emitTyping } = useContext(SocketContext);
     const messageEndRef = useRef();
@@ -253,111 +254,175 @@ function Chat({ chats: initialChats }) {
         }, 2000);
     };
 
+    const filteredChats = chats.filter(chat =>
+        chat.receiver.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (chat.lastMessage && chat.lastMessage.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+
     return (
         <div className="chat">
-            <div className="messages">
-                <h1>Messages</h1>
-                {chats.map((c) => (
-                    <div
-                        className={`message ${c.unreadCount > 0 ? 'unread' : ''}`}
-                        key={c.id}
-                        onClick={() => handleOpenChat(c.id, c.receiver)}
-                    >
-                        <img
-                            src={c.receiver.avatar || "/noavatar.jpg"}
-                            alt={`${c.receiver.nome}'s avatar`}
-                        />
-                        <div className="message-info">
-                            <div className="message-header">
-                                <span className="username">{c.receiver.nome}</span>
-                                {isUserOnline(c.receiver.id) && (
-                                    <span className="online-status">●</span>
-                                )}
-                            </div>
-                            <p>{c.lastMessage}</p>
-                            {c.unreadCount > 0 && (
-                                <span className="unread-count">{c.unreadCount}</span>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {chat && (
-                <div className="chatBox">
-                    <div className="top">
-                        <div className="user">
-                            <img
-                                src={chat.receiver.avatar || "/noavatar.jpg"}
-                                alt={`${chat.receiver.nome}'s avatar`}
+            <div className="chat-container">
+                <div className="messages-panel">
+                    <div className="messages-header">
+                        <h1>
+                            <MessageSquare className="icon" />
+                            Mensagens
+                        </h1>
+                        <div className="search-box">
+                            <Search className="search-icon" />
+                            <input
+                                type="text"
+                                placeholder="Procurar conversas..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                             />
-                            <div className="user-info">
-                                <span>{chat.receiver.nome}</span>
-                                {isUserOnline(chat.receiver.id) && (
-                                    <span className="online-status">online</span>
-                                )}
-                            </div>
                         </div>
-                        <button onClick={() => setChat(null)}>×</button>
                     </div>
 
-                    <div className="center">
-                        {loading ? (
-                            <div className="loading">Loading messages...</div>
-                        ) : (
-                            <>
-                                {chat.messages.map((message) => (
-                                    <div
-                                        className={`chatMessage ${message.senderId === currentUser.usuario.id ? "own" : "other"
-                                            } status-${message.status || 'sent'}`}
-                                        key={message.id}
-                                    >
-                                        <p>{message.text}</p>
-                                        <span className="message-info">
-                                            <span className="time">
-                                                {formatDistanceToNow(new Date(message.createdAt), {
+                    <div className="messages-list">
+                        {filteredChats.map((c) => (
+                            <div
+                                key={c.id}
+                                onClick={() => handleOpenChat(c.id, c.receiver)}
+                                className={`message-item ${chat?.id === c.id ? 'active' : ''} ${c.unreadCount > 0 ? 'unread' : ''}`}
+                            >
+                                <div className="avatar-container">
+                                    {c.receiver.avatar ? (
+                                        <img
+                                            src={c.receiver.avatar}
+                                            alt={`${c.receiver.nome}'s avatar`}
+                                        />
+                                    ) : (
+                                        <div className="avatar-placeholder">
+                                            <User />
+                                        </div>
+                                    )}
+                                    {isUserOnline(c.receiver.id) && <div className="online-indicator" />}
+                                </div>
+
+                                <div className="message-content">
+                                    <div className="message-header">
+                                        <div className="username-container">
+                                            <span className="username" title={c.receiver.nome}>
+                                                {c.receiver.nome}
+                                            </span>
+                                        </div>
+                                        {c.lastMessageAt && (
+                                            <span className="timestamp">
+                                                {formatDistanceToNow(new Date(c.lastMessageAt), {
                                                     addSuffix: true,
                                                     locale: ptBR
                                                 })}
                                             </span>
-                                            {message.senderId === currentUser.usuario.id && (
-                                                <span className="status">
-                                                    {message.status === "sending" && "sending..."}
-                                                    {message.status === "sent" && "sent"}
-                                                    {message.status === "delivered" && "delivered"}
-                                                    {message.status === "error" && (
-                                                        <span className="error-status">
-                                                            error sending - click to retry
+                                        )}
+                                    </div>
+                                    <p className="last-message">{c.lastMessage}</p>
+                                    {c.unreadCount > 0 && (
+                                        <span className="unread-badge">{c.unreadCount}</span>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Chat Box */}
+                {chat ? (
+                    <div className="chat-panel">
+                        <div className="chat-header">
+                            <div className="user-info">
+                                <div className="avatar-container">
+                                    {chat.receiver.avatar ? (
+                                        <img
+                                            src={chat.receiver.avatar}
+                                            alt={`${chat.receiver.nome}'s avatar`}
+                                        />
+                                    ) : (
+                                        <div className="avatar-placeholder">
+                                            <User />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="user-details">
+                                    <h2>{chat.receiver.nome}</h2>
+                                    {isUserOnline(chat.receiver.id) && (
+                                        <span className="online-status">
+                                            <div className="online-dot" />
+                                            online
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                            <button className="close-button" onClick={() => setChat(null)}>
+                                <X />
+                            </button>
+                        </div>
+
+                        <div className="chat-messages">
+                            {loading ? (
+                                <div className="loading-messages">Carregando mensagens...</div>
+                            ) : (
+                                <>
+                                    {chat.messages.map((message) => (
+                                        <div
+                                            key={message.id}
+                                            className={`chat-message ${message.senderId === currentUser.usuario.id ? 'own' : 'other'}`}
+                                        >
+                                            <div className="message-bubble">
+                                                <p>{message.text}</p>
+                                                <div className="message-info">
+                                                    <span className="time">
+                                                        {formatDistanceToNow(new Date(message.createdAt), {
+                                                            addSuffix: true,
+                                                            locale: ptBR
+                                                        })}
+                                                    </span>
+                                                    {message.senderId === currentUser.usuario.id && (
+                                                        <span className="message-status">
+                                                            {message.status === "sending" && <Clock className="status-icon" />}
+                                                            {message.status === "sent" && <CheckCheck className="status-icon" />}
+                                                            {message.status === "error" && <AlertCircle className="status-icon error" />}
                                                         </span>
                                                     )}
-                                                </span>
-                                            )}
-                                        </span>
-                                    </div>
-                                ))}
-                                {Object.entries(typing).map(([userId, isTyping]) =>
-                                    isTyping && (
-                                        <div key={userId} className="typing-indicator">
-                                            typing...
+                                                </div>
+                                            </div>
                                         </div>
-                                    )
-                                )}
-                                <div ref={messageEndRef} />
-                            </>
-                        )}
-                    </div>
+                                    ))}
+                                    {Object.entries(typing).map(([userId, isTyping]) =>
+                                        isTyping && (
+                                            <div key={userId} className="typing-indicator">
+                                                <div className="typing-dots" />
+                                                escrevendo...
+                                            </div>
+                                        )
+                                    )}
+                                    <div ref={messageEndRef} />
+                                </>
+                            )}
+                        </div>
 
-                    <form onSubmit={handleSubmit} className="bottom">
-                        <textarea
-                            name="text"
-                            placeholder="Type your message..."
-                            onChange={handleTyping}
-                        />
-                        <button type="submit">Send</button>
-                    </form>
-                </div>
-            )}
-        </div>
+                        <form onSubmit={handleSubmit} className="chat-input">
+                            <div className="input-container">
+                                <textarea
+                                    name="text"
+                                    placeholder="Escreva sua mensagem..."
+                                    onChange={handleTyping}
+                                    rows="1"
+                                />
+                                <button type="submit" className="send-button">
+                                    <Send />
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                ) : (
+                    <div className="empty-state">
+                        <MessageSquare className="empty-icon" />
+                        <p>Selecione uma conversa para começar a conversar</p>
+                    </div>
+                )}
+            </div>
+        </div >
     );
 }
 
