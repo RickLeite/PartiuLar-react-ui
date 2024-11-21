@@ -3,15 +3,24 @@
     display: flex;
     flex-direction: column;
 
+    .loading {
+        padding: 20px;
+        text-align: center;
+        color: #666;
+        font-style: italic;
+    }
+
     .messages {
         flex: 1;
         display: flex;
         flex-direction: column;
         gap: 20px;
         overflow-y: scroll;
+        padding-right: 10px;
 
         h1 {
             font-weight: 300;
+            margin-bottom: 20px;
         }
 
         .message {
@@ -22,6 +31,14 @@
             align-items: center;
             gap: 20px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+
+            &:hover {
+                border-color: #f7c14b;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
 
             img {
                 width: 40px;
@@ -33,6 +50,16 @@
             span {
                 font-weight: bold;
             }
+
+            p {
+                color: #666;
+                font-size: 0.9em;
+                margin: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                max-width: 200px;
+            }
         }
     }
 
@@ -42,6 +69,9 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        border-radius: 10px;
+        margin-left: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
         .top {
             background-color: #f7c14b85;
@@ -50,6 +80,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
 
             .user {
                 display: flex;
@@ -66,55 +98,121 @@
 
             .close {
                 cursor: pointer;
+                background: none;
+                border: none;
+                font-size: 24px;
+                color: #666;
+                padding: 5px 10px;
+                border-radius: 5px;
+                transition: all 0.2s;
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
             }
         }
 
         .center {
             height: 350px;
-            overflow: scroll;
+            overflow-y: scroll;
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 20px;
 
             .chatMessage {
-                width: 50%;
+                max-width: 60%;
+                padding: 12px 16px;
+                border-radius: 12px;
+                position: relative;
+                animation: messageAppear 0.3s ease;
 
-                &.own {
-                    align-self: flex-end;
-                    text-align: right;
+                p {
+                    margin: 0;
+                    margin-bottom: 5px;
                 }
 
                 span {
-                    font-size: 12px;
-                    background-color: #f7c14b39;
-                    padding: 2px;
-                    border-radius: 5px;
+                    font-size: 11px;
+                    color: #666;
+                    display: block;
+                }
+
+                &.own {
+                    align-self: flex-end;
+                    background-color: #f7c14b85;
+                    border-bottom-right-radius: 4px;
+
+                    span {
+                        text-align: right;
+                    }
+
+                    &.sending {
+                        opacity: 0.7;
+                    }
+                }
+
+                &.other {
+                    align-self: flex-start;
+                    background-color: #f0f0f0;
+                    border-bottom-left-radius: 4px;
                 }
             }
         }
 
         .bottom {
             border-top: 2px solid #f7c14b85;
-            height: 60px;
+            min-height: 60px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            align-items: stretch;
+            padding: 10px;
+            gap: 10px;
 
             textarea {
-                flex: 3;
-                height: 100%;
-                border: none;
-                padding: 20px;
+                flex: 1;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 10px;
+                resize: none;
+                min-height: 40px;
+                font-family: inherit;
+
+                &:focus {
+                    outline: none;
+                    border-color: #f7c14b;
+                }
             }
 
             button {
-                flex: 1;
-                background-color: #f7c14b85;
-                height: 100%;
+                padding: 0 20px;
+                background-color: #f7c14b;
                 border: none;
+                border-radius: 5px;
                 cursor: pointer;
+                font-weight: bold;
+                transition: all 0.2s;
+
+                &:hover {
+                    background-color: darken(#f7c14b, 5%);
+                    transform: translateY(-1px);
+                }
+
+                &:active {
+                    transform: translateY(0);
+                }
             }
         }
+    }
+}
+
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
