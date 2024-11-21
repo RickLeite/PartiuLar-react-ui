@@ -15,101 +15,98 @@ function ProfilePage() {
         try {
             await apiRequest.post("/auth/logout");
             updateUser(null);
-            localStorage.removeItem("user"); // Ensure localStorage is cleared
+            localStorage.removeItem("user");
             navigate("/");
         } catch (err) {
-            console.error("Error during logout:", err);
+            console.error("Erro ao fazer logout:", err);
         }
     };
 
-    // Early return if currentUser is not available
-    if (!currentUser) {
-        return <div className="loading">Loading...</div>;
+    if (!currentUser?.usuario) {
+        return <div className="loading">Carregando...</div>;
     }
 
     return (
         <div className="profilePage">
             <div className="details">
                 <div className="wrapper">
-                    {/* User Information Section */}
+                    {/* Seção de Informações do Usuário */}
                     <div className="title">
-                        <h1>User Information</h1>
+                        <h1>Informações do Usuário</h1>
                         <Link to="/profile/update">
-                            <button>Update Profile</button>
+                            <button>Atualizar Perfil</button>
                         </Link>
                     </div>
                     <div className="info">
                         <span>
                             Avatar:
                             <img
-                                src={currentUser.avatar || "/noavatar.jpg"}
-                                alt={`${currentUser.username}'s avatar`}
+                                src={currentUser.usuario.avatar || "/noavatar.jpg"}
+                                alt={`Avatar de ${currentUser.usuario.nome}`}
                             />
                         </span>
                         <span>
-                            Username: <b>{currentUser.username}</b>
+                            Nome: <b>{currentUser.usuario.nome}</b>
                         </span>
                         <span>
-                            Email: <b>{currentUser.email}</b>
+                            Email: <b>{currentUser.usuario.email}</b>
                         </span>
-                        {currentUser.phone && (
+                        {currentUser.usuario.telefone && (
                             <span>
-                                Phone: <b>{currentUser.phone}</b>
+                                Telefone: <b>{currentUser.usuario.telefone}</b>
                             </span>
                         )}
-                        {currentUser.gender && (
+                        {currentUser.usuario.genero && (
                             <span>
-                                Gender: <b>{currentUser.gender}</b>
+                                Gênero: <b>{currentUser.usuario.genero}</b>
                             </span>
                         )}
-                        <button onClick={handleLogout}>Logout</button>
+                        <button onClick={handleLogout}>Sair</button>
                     </div>
 
-                    {/* My Posts Section */}
+                    {/* Seção de Meus Anúncios */}
                     <div className="title">
-                        <h1>My Posts</h1>
+                        <h1>Meus Anúncios</h1>
                         <Link to="/add">
-                            <button>Create New Post</button>
+                            <button>Criar Novo Anúncio</button>
                         </Link>
                     </div>
-                    <Suspense fallback={<div className="loading">Loading posts...</div>}>
+                    <Suspense fallback={<div className="loading">Carregando anúncios...</div>}>
                         <Await
                             resolve={data.postResponse}
                             errorElement={
                                 <div className="error">
-                                    Error loading posts. Please try again later.
+                                    Erro ao carregar anúncios. Tente novamente mais tarde.
                                 </div>
                             }
                         >
                             {(postResponse) => {
-                                const posts = postResponse?.data?.userPosts || [];
+                                const posts = postResponse?.data?.posts || [];
                                 const stats = postResponse?.data?.stats || {};
 
                                 return (
                                     <>
-                                        {stats && (
-                                            <div className="stats">
-                                                <div className="stat-item">
-                                                    <span>Total Posts:</span>
-                                                    <b>{stats.totalPosts || 0}</b>
-                                                </div>
-                                                <div className="stat-item">
-                                                    <span>Total Value:</span>
-                                                    <b>${stats.totalValue?.toLocaleString() || 0}</b>
-                                                </div>
-                                                <div className="stat-item">
-                                                    <span>Active Posts:</span>
-                                                    <b>{stats.activePosts || 0}</b>
-                                                </div>
+                                        <div className="stats">
+                                            <div className="stat-item">
+                                                <span>Total de Anúncios:</span>
+                                                <b>{stats.totalPosts || 0}</b>
                                             </div>
-                                        )}
+                                            <div className="stat-item">
+                                                <span>Valor Total:</span>
+                                                <b>R$ {stats.totalValue?.toLocaleString('pt-BR') || 0}</b>
+                                            </div>
+                                            <div className="stat-item">
+                                                <span>Anúncios Ativos:</span>
+                                                <b>{stats.postsAtivos || 0}</b>
+                                            </div>
+                                        </div>
                                         {posts.length > 0 ? (
                                             <List posts={posts} />
                                         ) : (
                                             <div className="no-posts">
-                                                <p>You don't have any posts yet.</p>
+                                                <p>Você ainda não tem nenhum anúncio.</p>
                                                 <Link to="/add">
-                                                    <button>Create First Post</button>
+                                                    <button>Criar Primeiro Anúncio</button>
                                                 </Link>
                                             </div>
                                         )}
@@ -119,16 +116,16 @@ function ProfilePage() {
                         </Await>
                     </Suspense>
 
-                    {/* Saved Posts Section */}
+                    {/* Seção de Anúncios Salvos */}
                     <div className="title">
-                        <h1>Saved Posts</h1>
+                        <h1>Anúncios Salvos</h1>
                     </div>
-                    <Suspense fallback={<div className="loading">Loading saved posts...</div>}>
+                    <Suspense fallback={<div className="loading">Carregando anúncios salvos...</div>}>
                         <Await
                             resolve={data.postResponse}
                             errorElement={
                                 <div className="error">
-                                    Error loading saved posts. Please try again later.
+                                    Erro ao carregar anúncios salvos. Tente novamente mais tarde.
                                 </div>
                             }
                         >
@@ -138,9 +135,9 @@ function ProfilePage() {
                                     <List posts={savedPosts} />
                                 ) : (
                                     <div className="no-posts">
-                                        <p>You haven't saved any posts yet.</p>
+                                        <p>Você ainda não salvou nenhum anúncio.</p>
                                         <Link to="/list">
-                                            <button>Explore Posts</button>
+                                            <button>Explorar Anúncios</button>
                                         </Link>
                                     </div>
                                 );
@@ -150,15 +147,15 @@ function ProfilePage() {
                 </div>
             </div>
 
-            {/* Chat Section */}
+            {/* Seção de Chat */}
             <div className="chatContainer">
                 <div className="wrapper">
-                    <Suspense fallback={<div className="loading">Loading chats...</div>}>
+                    <Suspense fallback={<div className="loading">Carregando conversas...</div>}>
                         <Await
                             resolve={data.chatResponse}
                             errorElement={
                                 <div className="error">
-                                    Error loading chats. Please try again later.
+                                    Erro ao carregar conversas. Tente novamente mais tarde.
                                 </div>
                             }
                         >
@@ -168,7 +165,7 @@ function ProfilePage() {
                                     <Chat chats={chats} />
                                 ) : (
                                     <div className="no-chats">
-                                        <p>You don't have any conversations yet.</p>
+                                        <p>Você ainda não tem nenhuma conversa.</p>
                                     </div>
                                 );
                             }}

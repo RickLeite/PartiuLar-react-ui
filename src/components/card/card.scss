@@ -17,6 +17,8 @@
         flex: 2;
         height: 200px;
         position: relative;
+        display: block;
+        /* Ensure link is block level */
 
         @include md {
             display: none;
@@ -28,17 +30,6 @@
             object-fit: cover;
             border-radius: 8px;
         }
-
-        .propertyType {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
     }
 
     .textContainer {
@@ -47,17 +38,14 @@
         flex-direction: column;
         gap: 10px;
 
-        img {
-            width: 16px;
-            height: 16px;
-        }
-
-        .title {
+        .titulo {
             font-size: 20px;
             font-weight: 600;
             color: #333;
 
             a {
+                text-decoration: none;
+                color: inherit;
                 transition: color 0.3s ease;
 
                 &:hover {
@@ -66,15 +54,20 @@
             }
         }
 
-        .address {
+        .endereco {
             font-size: 14px;
             display: flex;
             align-items: center;
             gap: 5px;
             color: #666;
+
+            img {
+                width: 16px;
+                height: 16px;
+            }
         }
 
-        .price {
+        .preco {
             font-size: 22px;
             font-weight: 600;
             color: #2ecc71;
@@ -84,48 +77,46 @@
             width: max-content;
         }
 
-        .description {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.4;
-        }
-
         .bottom {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 10px;
 
-            .features {
-                display: flex;
-                gap: 15px;
-
-                .feature {
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                    background-color: #f8f9fa;
-                    padding: 5px 10px;
-                    border-radius: 4px;
-                    font-size: 13px;
-                    color: #555;
-                }
+            .author {
+                font-size: 14px;
+                color: #666;
             }
 
             .icons {
                 display: flex;
                 gap: 10px;
+                z-index: 2;
+                /* Ensure icons are above other elements */
 
-                .icon {
-                    padding: 8px;
+                .chat-icon {
+                    background: none;
                     border: 1px solid #ddd;
                     border-radius: 4px;
+                    padding: 8px;
                     cursor: pointer;
+                    color: #666;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     transition: all 0.3s ease;
+                    z-index: 3;
+                    /* Ensure button is clickable */
 
                     &:hover {
                         background-color: #fece51;
                         border-color: #fece51;
+                        color: white;
+                        transform: translateY(-2px);
+                    }
+
+                    &:active {
+                        transform: translateY(0);
                     }
                 }
             }
@@ -136,10 +127,10 @@
 @media (max-width: 768px) {
     .card {
         flex-direction: column;
-    }
 
-    .imageContainer {
-        display: flex;
-        height: auto;
+        .imageContainer {
+            display: block;
+            height: 200px;
+        }
     }
 }
