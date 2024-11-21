@@ -56,7 +56,6 @@ function Navbar() {
                     <Link to="/">Início</Link>
                     <Link to="/list">Lista</Link>
                     <Link to="/about">Sobre-Nós</Link>
-                    <Link to="/contact">Contato</Link>
                     {!currentUser && (
                         <>
                             <Link to="/login">Entrar</Link>
