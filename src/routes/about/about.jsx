@@ -1,5 +1,5 @@
 import React from "react";
-import "./About.scss";
+import "./about.scss";
 
 function About() {
     const teamMembers = [
@@ -28,11 +28,6 @@ function About() {
                     <div className="teamMembers">
                         {teamMembers.map((member, index) => (
                             <div className="teamMember" key={index}>
-                                <img
-                                    src={member.photo}
-                                    alt={member.name}
-                                    className="teamMemberPhoto"
-                                />
                                 <p>{member.name}</p>
                             </div>
                         ))}

@@ -1,14 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Trash2 } from "lucide-react";
 import "./card.scss";
 import { toast } from "sonner";
 import apiRequest from "../../lib/apiRequest";
 
-function Card({ item }) {
+function Card({ item, onDelete }) {
     const navigate = useNavigate();
     const { currentUser } = useContext(AuthContext);
+
+    const isOwner = currentUser?.usuario?.id === item.usuario?.id;
 
     const getFirstImage = (imgField) => {
         try {
@@ -33,10 +35,6 @@ function Card({ item }) {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log("Chat button clicked");
-        console.log("Current user:", currentUser);
-        console.log("Item data:", item);
-
         // Verificar se tem usuário logado
         if (!currentUser) {
             toast.error("Você precisa estar logado para iniciar uma conversa");
@@ -46,7 +44,6 @@ function Card({ item }) {
 
         // Verificar dados do anunciante usando usuarioId do post
         const postOwnerId = item.usuario?.id;
-        console.log("ID do dono do post:", postOwnerId);
 
         if (!postOwnerId) {
             toast.error("Não foi possível identificar o anunciante");
@@ -60,8 +57,6 @@ function Card({ item }) {
         }
 
         try {
-            console.log("Iniciando chat com usuário:", postOwnerId);
-
             // Mostrar loading
             const loadingToast = toast.loading("Iniciando conversa...");
 
@@ -69,8 +64,6 @@ function Card({ item }) {
             const response = await apiRequest.post("/chats", {
                 receiverId: postOwnerId
             });
-
-            console.log("Resposta da criação do chat:", response);
 
             // Remover loading
             toast.dismiss(loadingToast);
@@ -91,6 +84,47 @@ function Card({ item }) {
                 navigate("/login");
             } else {
                 toast.error("Erro ao iniciar conversa. Tente novamente mais tarde");
+            }
+        }
+    };
+
+    const handleDelete = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!confirm("Tem certeza que deseja remover este anúncio?")) {
+            return;
+        }
+
+        try {
+            const loadingToast = toast.loading("Removendo anúncio...");
+
+            const response = await apiRequest.delete(`/posts/${item.id}`);
+
+            toast.dismiss(loadingToast);
+
+            if (response.status === 200) {
+                toast.success("Anúncio removido com sucesso!");
+                if (onDelete) {
+                    onDelete(item.id);
+                }
+                // Recarrega a página após um pequeno delay para mostrar o toast
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        } catch (error) {
+            console.error("Erro ao remover anúncio:", error);
+
+            if (error.response?.status === 403) {
+                toast.error("Você não tem permissão para remover este anúncio");
+            } else if (error.response?.status === 404) {
+                toast.error("Anúncio não encontrado");
+            } else if (error.response?.status === 401) {
+                toast.error("Sua sessão expirou. Por favor, faça login novamente");
+                navigate("/login");
+            } else {
+                toast.error("Erro ao remover anúncio. Tente novamente mais tarde");
             }
         }
     };
@@ -116,14 +150,26 @@ function Card({ item }) {
                         <span>Anunciante: {item.usuario?.nome || "Nome não disponível"}</span>
                     </div>
                     <div className="icons">
-                        <button
-                            type="button"
-                            onClick={handleChatClick}
-                            className="icon chat-icon"
-                            title="Iniciar conversa"
-                        >
-                            <MessageSquare size={20} />
-                        </button>
+                        {!isOwner && (
+                            <button
+                                type="button"
+                                onClick={handleChatClick}
+                                className="icon chat-icon"
+                                title="Iniciar conversa"
+                            >
+                                <MessageSquare size={20} />
+                            </button>
+                        )}
+                        {isOwner && (
+                            <button
+                                type="button"
+                                onClick={handleDelete}
+                                className="icon delete-icon"
+                                title="Remover anúncio"
+                            >
+                                <Trash2 size={20} />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import './list.scss'
 import Card from "../card/Card"
 
-function List({ posts }) {
+function List({ posts, onDelete }) {
     console.log("Posts recebidos:", posts);
 
     // Processa os posts para garantir que os dados estejam corretos
@@ -39,7 +39,7 @@ function List({ posts }) {
     return (
         <div className='list'>
             {processedPosts.map(item => (
-                <Card key={item.id} item={item} />
+                <Card key={item.id} item={item} onDelete={onDelete} />
             ))}
         </div>
     )

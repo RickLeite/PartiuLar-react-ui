@@ -18,7 +18,6 @@ function Navbar() {
                 </Link>
                 <Link to="/list">Lista</Link>
                 <Link to="/about">Sobre-Nós</Link>
-                <Link to="/contact">Contato</Link>
             </div>
             <div className="right">
                 {currentUser ? (

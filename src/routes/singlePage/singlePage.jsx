@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import DOMPurify from "dompurify";
 import Slider from "../../components/slider/Slider";
@@ -41,22 +41,33 @@ const PropertyHeader = ({ title, address, price }) => (
 );
 
 // Component for user information
-const UserInfo = ({ user, onChatClick }) => (
+const UserInfo = ({ user, onChatClick, onDeleteClick, isOwner }) => (
     <div className="user">
         <img
             src={user?.avatar || AvatarPlaceholder}
             alt={user?.nome}
         />
         <span>{user?.nome}</span>
-        {onChatClick && (
-            <button
-                onClick={onChatClick}
-                className="chat-button"
-                title="Iniciar conversa"
-            >
-                <MessageSquare size={20} />
-            </button>
-        )}
+        <div className="user-actions">
+            {!isOwner && onChatClick && (
+                <button
+                    onClick={onChatClick}
+                    className="action-button chat-button"
+                    title="Iniciar conversa"
+                >
+                    <MessageSquare size={20} />
+                </button>
+            )}
+            {isOwner && onDeleteClick && (
+                <button
+                    onClick={onDeleteClick}
+                    className="action-button delete-button"
+                    title="Remover anúncio"
+                >
+                    <Trash2 size={20} />
+                </button>
+            )}
+        </div>
     </div>
 );
 
@@ -119,7 +130,6 @@ const ErrorState = ({ message }) => (
     </div>
 );
 
-
 function SinglePage() {
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -127,6 +137,8 @@ function SinglePage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { currentUser } = useContext(AuthContext);
+
+    const isOwner = currentUser?.usuario?.id === post?.usuario?.id;
 
     const handleChatClick = async (e) => {
         if (e) {
@@ -186,6 +198,46 @@ function SinglePage() {
         }
     };
 
+    const handleDelete = async (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        if (!confirm("Tem certeza que deseja remover este anúncio?")) {
+            return;
+        }
+
+        try {
+            const loadingToast = toast.loading("Removendo anúncio...");
+
+            const response = await apiRequest.delete(`/posts/${id}`);
+
+            toast.dismiss(loadingToast);
+
+            if (response.status === 200) {
+                toast.success("Anúncio removido com sucesso!");
+                // Navega para o perfil após um pequeno delay para mostrar o toast
+                setTimeout(() => {
+                    navigate("/profile");
+                }, 1000);
+            }
+        } catch (error) {
+            console.error("Erro ao remover anúncio:", error);
+
+            if (error.response?.status === 403) {
+                toast.error("Você não tem permissão para remover este anúncio");
+            } else if (error.response?.status === 404) {
+                toast.error("Anúncio não encontrado");
+            } else if (error.response?.status === 401) {
+                toast.error("Sua sessão expirou. Por favor, faça login novamente");
+                navigate("/login");
+            } else {
+                toast.error("Erro ao remover anúncio. Tente novamente mais tarde");
+            }
+        }
+    };
+
     useEffect(() => {
         const fetchPost = async () => {
             try {
@@ -229,6 +281,8 @@ function SinglePage() {
                                 <UserInfo
                                     user={post.usuario}
                                     onChatClick={handleChatClick}
+                                    onDeleteClick={handleDelete}
+                                    isOwner={isOwner}
                                 />
                             )}
                         </div>

@@ -5,11 +5,41 @@ import apiRequest from "../../lib/apiRequest";
 import { Await, Link, useLoaderData, useNavigate } from "react-router-dom";
 import { Suspense, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { toast } from "sonner";
 
 function ProfilePage() {
     const data = useLoaderData();
     const { updateUser, currentUser } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    const handleDeletePost = async (postId) => {
+        try {
+            const loadingToast = toast.loading("Removendo anúncio...");
+            const response = await apiRequest.delete(`/posts/${postId}`);
+            toast.dismiss(loadingToast);
+
+            if (response.status === 200) {
+                toast.success("Anúncio removido com sucesso!");
+                // Recarrega a página após um pequeno delay para mostrar o toast
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        } catch (err) {
+            console.error("Erro ao deletar anúncio:", err);
+
+            if (err.response?.status === 403) {
+                toast.error("Você não tem permissão para remover este anúncio");
+            } else if (err.response?.status === 404) {
+                toast.error("Anúncio não encontrado");
+            } else if (err.response?.status === 401) {
+                toast.error("Sua sessão expirou. Por favor, faça login novamente");
+                navigate("/login");
+            } else {
+                toast.error("Erro ao remover anúncio. Tente novamente mais tarde");
+            }
+        }
+    };
 
     const handleLogout = async () => {
         try {
@@ -19,6 +49,7 @@ function ProfilePage() {
             navigate("/");
         } catch (err) {
             console.error("Erro ao fazer logout:", err);
+            toast.error("Erro ao fazer logout. Tente novamente.");
         }
     };
 
@@ -91,17 +122,18 @@ function ProfilePage() {
                                                 <span>Total de Anúncios:</span>
                                                 <b>{stats.totalPosts || 0}</b>
                                             </div>
-                                            <div className="stat-item">
-                                                <span>Valor Total:</span>
-                                                <b>R$ {stats.totalValue?.toLocaleString('pt-BR') || 0}</b>
-                                            </div>
-                                            <div className="stat-item">
-                                                <span>Anúncios Ativos:</span>
-                                                <b>{stats.postsAtivos || 0}</b>
-                                            </div>
                                         </div>
                                         {posts.length > 0 ? (
-                                            <List posts={posts} />
+                                            <List
+                                                posts={posts.map(post => ({
+                                                    ...post,
+                                                    usuario: {
+                                                        ...post.usuario,
+                                                        id: currentUser.usuario.id
+                                                    }
+                                                }))}
+                                                onDelete={handleDeletePost}
+                                            />
                                         ) : (
                                             <div className="no-posts">
                                                 <p>Você ainda não tem nenhum anúncio.</p>
@@ -111,35 +143,6 @@ function ProfilePage() {
                                             </div>
                                         )}
                                     </>
-                                );
-                            }}
-                        </Await>
-                    </Suspense>
-
-                    {/* Seção de Anúncios Salvos */}
-                    <div className="title">
-                        <h1>Anúncios Salvos</h1>
-                    </div>
-                    <Suspense fallback={<div className="loading">Carregando anúncios salvos...</div>}>
-                        <Await
-                            resolve={data.postResponse}
-                            errorElement={
-                                <div className="error">
-                                    Erro ao carregar anúncios salvos. Tente novamente mais tarde.
-                                </div>
-                            }
-                        >
-                            {(postResponse) => {
-                                const savedPosts = postResponse?.data?.savedPosts || [];
-                                return savedPosts.length > 0 ? (
-                                    <List posts={savedPosts} />
-                                ) : (
-                                    <div className="no-posts">
-                                        <p>Você ainda não salvou nenhum anúncio.</p>
-                                        <Link to="/list">
-                                            <button>Explorar Anúncios</button>
-                                        </Link>
-                                    </div>
                                 );
                             }}
                         </Await>

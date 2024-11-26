@@ -11,7 +11,7 @@ import NewPostPage from "./routes/newPostPage/newPostPage";
 import RequireAuth from "./components/RequireAuth/RequireAuth";
 import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary";
 import { listPageLoader, profilePageLoader, singlePageLoader } from "./lib/loaders";
-import About from "./routes/about/About"; 
+import About from "./routes/about/about";
 
 function App() {
   const router = createBrowserRouter([
@@ -37,7 +37,7 @@ function App() {
           errorElement: <ErrorBoundary />
         },
         {
-          path: "/about", 
+          path: "/about",
           element: <About />,
         },
         {
